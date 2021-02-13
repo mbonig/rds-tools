@@ -26,9 +26,18 @@ const project = new AwsCdkConstructLibrary({
   deps: [],
   devDeps: ['eslint', 'esbuild'],
   peerDeps: cdkDeps,
+  npmAccess: 'public',
 });
 
 project.addFields({
-  public: true,
+  awscdkio: {
+    twitter: 'mattbonig',
+  },
 });
+
+project.gitignore.exclude('cdk.context.json', '.cdk.staging/', '.idea/', 'cdk.out/');
+project.npmignore.exclude('cdk.context.json', '.cdk.staging/', '.idea/', 'cdk.out/');
+project.npmignore.include('lib/*.handler.ts');
+
+
 project.synth();

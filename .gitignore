@@ -7,7 +7,9 @@
 *.tgz
 *.tsbuildinfo
 .cache
+.cdk.staging/
 .eslintcache
+.idea/
 .jsii
 .nyc_output
 .yarn-integrity
@@ -16,6 +18,8 @@
 /lib
 /test-reports/
 build/Release
+cdk.context.json
+cdk.out/
 coverage
 jspm_packages/
 junit.xml
