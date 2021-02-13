@@ -28,4 +28,7 @@ const project = new AwsCdkConstructLibrary({
   peerDeps: cdkDeps,
 });
 
+project.addFields({
+  public: true,
+});
 project.synth();
