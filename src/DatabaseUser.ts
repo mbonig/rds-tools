@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { Port, SecurityGroup } from '@aws-cdk/aws-ec2';
 import { Rule } from '@aws-cdk/aws-events';
 import { LambdaFunction } from '@aws-cdk/aws-events-targets';
 import { Runtime } from '@aws-cdk/aws-lambda';
@@ -93,7 +94,8 @@ export class DatabaseUser extends Construct {
 
     // setup DB connection
     // todo: can this be done without the database stack taking a dependency on this?
-    props.databaseInstance.connections.allowDefaultPortFrom(userManagementFunction);
+    const sgRef = SecurityGroup.fromSecurityGroupId(this, 'db-sg', props.databaseInstance.connections.securityGroups[0].securityGroupId);
+    sgRef.connections.allowFrom(userManagementFunction, Port.tcp(1366));
 
     // setup the EventBridge rule for  listening to the secret
     const rule = new Rule(this, 'database-password-updater-rule', {
