@@ -1,5 +1,5 @@
-import { handler as cfnResourceHandler } from './database-user/database-user-creation';
-import { handler as eventBridgeHandler } from './database-user/database-user-updater';
+import { handler as cfnResourceHandler } from './database-user-creation';
+import { handler as eventBridgeHandler } from './database-user-updater';
 
 export const handler = async (event: any, context: any) => {
   if (event.RequestType) {

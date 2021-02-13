@@ -5,13 +5,14 @@ const AWS = require('aws-sdk');
 const response = require('./cfn-response');
 
 const sm = new AWS.SecretsManager();
-const powerUserSecretArn = process.env.MASTER_SECRET_ARN;
+const masterSecretArn = process.env.MASTER_SECRET_ARN;
 
 export const handler = async (event: any, context: any) => {
   console.log('event: ', JSON.stringify(event, null, 2));
 
   if (event.RequestType === 'Delete') {
     // if the user is being deleted, we should do something..
+    // TODO: do something if user is deleted?
     await response.send(event, context, 'SUCCESS', null, event.PhysicalResourceId);
     return;
   }
@@ -19,7 +20,7 @@ export const handler = async (event: any, context: any) => {
   try {
     const { databases, secretForUser } = event.ResourceProperties;
 
-    const { SecretString: powerUserSecretString } = await sm.getSecretValue({ SecretId: powerUserSecretArn }).promise();
+    const { SecretString: powerUserSecretString } = await sm.getSecretValue({ SecretId: masterSecretArn }).promise();
     const { host, username, password } = JSON.parse(powerUserSecretString);
 
     const { SecretString: userSecretString } = await sm.getSecretValue({ SecretId: secretForUser }).promise();
