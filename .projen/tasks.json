@@ -35,14 +35,9 @@
     },
     "compile": {
       "name": "compile",
-      "category": "00.build",
-      "description": "Only compile",
       "steps": [
         {
-          "exec": "jsii --silence-warnings=reserved-word --no-fix-peer-dependencies"
-        },
-        {
-          "spawn": "docgen"
+          "exec": "jsii --silence-warnings=reserved-word --no-fix-peer-dependencies && jsii-docgen && cp src/handlers/* lib/handlers/"
         }
       ]
     },

@@ -20,8 +20,8 @@ cdk.context.json
 cdk.out/
 dist
 junit.xml
+!./lib/handlers/*
 !.jsii
 !/lib
 !/lib/**/*.d.ts
 !/lib/**/*.js
-!lib/*.handler.ts

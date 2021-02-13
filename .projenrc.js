@@ -37,7 +37,10 @@ project.addFields({
 
 project.gitignore.exclude('cdk.context.json', '.cdk.staging/', '.idea/', 'cdk.out/');
 project.npmignore.exclude('cdk.context.json', '.cdk.staging/', '.idea/', 'cdk.out/');
-project.npmignore.include('lib/*.handler.ts');
+project.npmignore.include('./lib/handlers/*');
 
+project.addTask('compile', {
+  exec: 'jsii --silence-warnings=reserved-word --no-fix-peer-dependencies && jsii-docgen && cp src/handlers/* lib/handlers/',
+});
 
 project.synth();
