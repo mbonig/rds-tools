@@ -24,7 +24,7 @@ describe('DatabaseUser', () => {
     new DatabaseUser(stack, 'test-construct', {
       databaseInstance: testDatabaseInstance,
       databases: ['thingone'],
-      secretNamePrefix: 'db/',
+      secretNamePrefix: props.secretNamePrefix,
       username: 'app',
       masterSecret: props?.masterSecret,
     });
@@ -129,8 +129,15 @@ describe('DatabaseUser', () => {
     });
   });
 
-  it('User secret has correct name', () => {
+  it('User secret has correct name with no prefix', () => {
     createStack();
+    expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
+      Name: 'app',
+    });
+  });
+
+  it('User secret has correct name', () => {
+    createStack({ secretNamePrefix: 'db/' });
     expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
       Name: 'db/app',
     });
@@ -203,7 +210,7 @@ describe('DatabaseUser', () => {
         detail: {
           requestParameters: {
             secretId: [
-              'db/app',
+              'app',
             ],
           },
         },

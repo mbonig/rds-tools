@@ -52,7 +52,7 @@ export class DatabaseUser extends Construct {
     super(scope, id);
 
     // set up user secret
-    const secretName = `${props.secretNamePrefix}${props.username}`;
+    const secretName = `${props.secretNamePrefix ?? ''}${props.username}`;
     const userSecret = new Secret(this, `${id}-user-secret`, {
       secretName: secretName,
       generateSecretString: {
@@ -93,7 +93,7 @@ export class DatabaseUser extends Construct {
     userSecret.grantRead(userManagementFunction);
 
     // setup DB connection
-    // todo: can this be done without the database stack taking a dependency on this?
+    // we're going to do some hoopla with the SG so that we don't force a dependency on the databaseInstance's stack
     const sgRef = SecurityGroup.fromSecurityGroupId(this, 'db-sg', props.databaseInstance.connections.securityGroups[0].securityGroupId);
     sgRef.connections.allowFrom(userManagementFunction, Port.tcp(1366));
 
