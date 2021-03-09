@@ -1,1 +1,1 @@
-export * from './DatabaseUser';
+export * from './DatabaseScript';
