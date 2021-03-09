@@ -37,7 +37,7 @@ describe('DatabaseUser', () => {
     expect(stack).toHaveResource('AWS::Lambda::Function', {
       Role: {
         'Fn::GetAtt': [
-          'SingletonLambdatestconstructServiceRole16103702',
+          'SingletonLambdatestconstructtestdbServiceRole6B2FC052',
           'Arn',
         ],
       },
@@ -69,7 +69,7 @@ describe('DatabaseUser', () => {
         SecurityGroupIds: [
           {
             'Fn::GetAtt': [
-              'SingletonLambdatestconstructSecurityGroup41C6411D',
+              'SingletonLambdatestconstructtestdbSecurityGroup8F79B3EC',
               'GroupId',
             ],
           },
@@ -93,7 +93,7 @@ describe('DatabaseUser', () => {
     expect(stack).toHaveResource('AWS::Lambda::Function', {
       Role: {
         'Fn::GetAtt': [
-          'SingletonLambdatestconstructServiceRole16103702',
+          'SingletonLambdatestconstructtestdbServiceRole6B2FC052',
           'Arn',
         ],
       },
@@ -125,7 +125,7 @@ describe('DatabaseUser', () => {
         SecurityGroupIds: [
           {
             'Fn::GetAtt': [
-              'SingletonLambdatestconstructSecurityGroup41C6411D',
+              'SingletonLambdatestconstructtestdbSecurityGroup8F79B3EC',
               'GroupId',
             ],
           },
@@ -160,10 +160,10 @@ describe('DatabaseUser', () => {
         ],
         Version: '2012-10-17',
       },
-      PolicyName: 'SingletonLambdatestconstructServiceRoleDefaultPolicy56F1A299',
+      PolicyName: 'SingletonLambdatestconstructtestdbServiceRoleDefaultPolicyA1376FC8',
       Roles: [
         {
-          Ref: 'SingletonLambdatestconstructServiceRole16103702',
+          Ref: 'SingletonLambdatestconstructtestdbServiceRole6B2FC052',
         },
       ],
     });
@@ -174,7 +174,7 @@ describe('DatabaseUser', () => {
     expect(stack).toHaveResource('AWS::CloudFormation::CustomResource', {
       ServiceToken: {
         'Fn::GetAtt': [
-          'SingletonLambdatestconstruct2CF35FE8',
+          'SingletonLambdatestconstructtestdb714CC002',
           'Arn',
         ],
       },
@@ -236,7 +236,7 @@ describe('DatabaseUser', () => {
       },
       SourceSecurityGroupId: {
         'Fn::GetAtt': [
-          'SingletonLambdatestconstructSecurityGroup41C6411D',
+          'SingletonLambdatestconstructtestdbSecurityGroup8F79B3EC',
           'GroupId',
         ],
       },
@@ -250,7 +250,7 @@ describe('DatabaseUser', () => {
     createStack();
     expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
       IpProtocol: 'tcp',
-      Description: 'from teststackSingletonLambdatestconstructSecurityGroupB05F5552:{IndirectPort}',
+      Description: 'from teststackSingletonLambdatestconstructtestdbSecurityGroup974E0E5B:{IndirectPort}',
       FromPort: {
         'Fn::GetAtt': [
           'testdb9A2744AA',
@@ -265,7 +265,7 @@ describe('DatabaseUser', () => {
       },
       SourceSecurityGroupId: {
         'Fn::GetAtt': [
-          'SingletonLambdatestconstructSecurityGroup41C6411D',
+          'SingletonLambdatestconstructtestdbSecurityGroup8F79B3EC',
           'GroupId',
         ],
       },
