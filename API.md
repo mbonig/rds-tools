@@ -36,6 +36,7 @@ new DatabaseScript(scope: Construct, id: string, props: DatabaseScriptProps)
 * **props** (<code>[DatabaseScriptProps](#matthewbonig-rds-tools-databasescriptprops)</code>)  *No description*
   * **databaseInstance** (<code>[DatabaseInstance](#aws-cdk-aws-rds-databaseinstance)</code>)  The database instance to run the script against. 
   * **script** (<code>string</code>)  The script to execute. 
+  * **databaseName** (<code>string</code>)  An optional databaseName. __*Optional*__
   * **secret** (<code>[ISecret](#aws-cdk-aws-secretsmanager-isecret)</code>)  An optional secret that provides credentials for the database. __*Default*__: the root secret from the database instance
 
 
@@ -52,6 +53,7 @@ Name | Type | Description
 -----|------|-------------
 **databaseInstance** | <code>[DatabaseInstance](#aws-cdk-aws-rds-databaseinstance)</code> | The database instance to run the script against.
 **script** | <code>string</code> | The script to execute.
+**databaseName**? | <code>string</code> | An optional databaseName.<br/>__*Optional*__
 **secret**? | <code>[ISecret](#aws-cdk-aws-secretsmanager-isecret)</code> | An optional secret that provides credentials for the database.<br/>__*Default*__: the root secret from the database instance
 
 
