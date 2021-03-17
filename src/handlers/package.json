@@ -1,0 +1,17 @@
+{
+  "name": "handlers",
+  "version": "1.0.0",
+  "description": "",
+  "main": "cfn-response.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mssql": "^6.3.1",
+    "pg": "^8.5.1",
+    "promise-mysql": "^5.0.3"
+  }
+}

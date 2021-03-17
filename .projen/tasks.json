@@ -35,9 +35,21 @@
     },
     "compile": {
       "name": "compile",
+      "category": "00.build",
+      "description": "Only compile",
       "steps": [
         {
-          "exec": "jsii --silence-warnings=reserved-word --no-fix-peer-dependencies && jsii-docgen && cp src/handlers/* lib/handlers/"
+          "exec": "jsii --silence-warnings=reserved-word --no-fix-peer-dependencies"
+        },
+        {
+          "spawn": "docgen"
+        },
+        {
+          "exec": "npm i",
+          "cwd": "src/layer/nodejs"
+        },
+        {
+          "exec": "jsii --silence-warnings=reserved-word --no-fix-peer-dependencies && jsii-docgen && cp src/handlers/*.ts lib/handlers/"
         }
       ]
     },

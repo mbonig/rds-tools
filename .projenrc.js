@@ -1,3 +1,4 @@
+const path = require('path');
 const { AwsCdkConstructLibrary } = require('projen');
 
 let cdkDeps = [
@@ -39,8 +40,8 @@ project.gitignore.exclude('cdk.context.json', '.cdk.staging/', '.idea/', 'cdk.ou
 project.npmignore.exclude('cdk.context.json', '.cdk.staging/', '.idea/', 'cdk.out/');
 project.npmignore.include('./lib/handlers/*');
 
-project.addTask('compile', {
-  exec: 'jsii --silence-warnings=reserved-word --no-fix-peer-dependencies && jsii-docgen && cp src/handlers/* lib/handlers/',
-});
+project.compileTask.exec('npm i', { cwd: path.join('.', 'src', 'layer', 'nodejs') });
+project.compileTask.exec('jsii --silence-warnings=reserved-word --no-fix-peer-dependencies && jsii-docgen && cp src/handlers/*.ts lib/handlers/');
+
 
 project.synth();

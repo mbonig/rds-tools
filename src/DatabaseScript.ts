@@ -1,14 +1,14 @@
 import * as path from 'path';
 import { CfnSecurityGroupIngress } from '@aws-cdk/aws-ec2';
 import { slugify } from '@aws-cdk/aws-ec2/lib/util';
-import { FunctionBase, IFunction, Runtime } from '@aws-cdk/aws-lambda';
+import { Code, LayerVersion, Runtime } from '@aws-cdk/aws-lambda';
 import { NodejsFunction, NodejsFunctionProps } from '@aws-cdk/aws-lambda-nodejs';
 import { RetentionDays } from '@aws-cdk/aws-logs';
 import { DatabaseInstance } from '@aws-cdk/aws-rds';
 import { ISecret } from '@aws-cdk/aws-secretsmanager';
-import { Construct, CustomResource, Duration, Stack } from '@aws-cdk/core';
+import { CfnCustomResource, CfnResource, Construct, CustomResource, Duration, Stack } from '@aws-cdk/core';
 
-interface DatabaseScriptProps {
+export interface DatabaseScriptProps {
   /**
    * The database instance to run the script against
    */
@@ -49,46 +49,48 @@ export class DatabaseScript extends Construct {
         ENGINE: props.databaseInstance.engine?.engineType!,
       },
       bundling: {
-        nodeModules: ['mssql'],
+        externalModules: ['aws-sdk', 'mssql', 'promise-mysql', 'pg'],
       },
-      timeout: Duration.seconds(60),
+      timeout: Duration.seconds(15), // TODO: should be overridable
       logRetention: RetentionDays.ONE_DAY,
     });
+    handler.addLayers(new LayerVersion(this, 'deps-layer', {
+      code: Code.fromAsset(path.join(__dirname, 'layer')),
+    }));
 
     secret.grantRead(handler);
-    if (Stack.of(props.databaseInstance) === Stack.of(this)) {
-      props.databaseInstance.connections.allowDefaultPortFrom(handler);
-    } else {
-      // https://www.youtube.com/watch?v=EzWNBmjyv7Y
-      new CfnSecurityGroupIngress(this, 'SecurityGroupIngressFrom', {
-        // @ts-ignore
-        fromPort: props.databaseInstance.dbInstanceEndpointPort,
-        // @ts-ignore
-        toPort: props.databaseInstance.dbInstanceEndpointPort,
-        groupId: props.databaseInstance.connections.securityGroups[0].securityGroupId,
-        sourceSecurityGroupId: handler.connections.securityGroups[0].securityGroupId,
-        ipProtocol: 'tcp',
-        description: 'access from lambda handler to database',
-      });
-    }
 
-    new CustomResource(this, `${id}-customResource`, {
+    // https://www.youtube.com/watch?v=EzWNBmjyv7Y
+    new CfnSecurityGroupIngress(this, 'SecurityGroupIngressFrom', {
+      // @ts-ignore
+      fromPort: props.databaseInstance.dbInstanceEndpointPort,
+      // @ts-ignore
+      toPort: props.databaseInstance.dbInstanceEndpointPort,
+      groupId: props.databaseInstance.connections.securityGroups[0].securityGroupId,
+      sourceSecurityGroupId: handler.connections.securityGroups[0].securityGroupId,
+      ipProtocol: 'tcp',
+      description: 'access from lambda handler to database',
+    });
+
+    const cr = new CustomResource(this, `${id}-customResource`, {
       serviceToken: handler.functionArn,
       properties: {
         script: props.script,
       },
     });
+
+    (cr.node.defaultChild as CfnCustomResource).addDependsOn(props.databaseInstance.vpc.node.defaultChild as CfnResource);
   }
 
 
-  private ensureLambda(id: string, props: NodejsFunctionProps): IFunction {
+  private ensureLambda(id: string, props: NodejsFunctionProps): NodejsFunction {
     // TODO: Copy-pasted from CDK codebase until
     //       https://github.com/aws/aws-cdk/issues/6261 is fixed and we can
     //       use a proper SingletonFunction
-    const constructName = 'SingletonLambda' + slugify(id);
+    const constructName = slugify(id) + 'singl';
     const existing = Stack.of(this).node.tryFindChild(constructName);
     if (existing) {
-      return existing as FunctionBase;
+      return existing as NodejsFunction;
     }
     return new NodejsFunction(Stack.of(this), constructName, props);
   }

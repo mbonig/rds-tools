@@ -12,6 +12,63 @@ describe('DatabaseUser', () => {
   let stack: Stack;
   let vpc: Vpc;
 
+  // standard responses
+  const role = {
+    'Fn::GetAtt': [
+      'testconstructtestdbsinglServiceRole6B7C76BD',
+      'Arn',
+    ],
+  };
+
+  const variables = {
+    ENGINE: 'mysql',
+    DATABASE_HOST: {
+      'Fn::GetAtt': [
+        'testdb9A2744AA',
+        'Endpoint.Address',
+      ],
+    },
+    DATABASE_PORT: {
+      'Fn::GetAtt': [
+        'testdb9A2744AA',
+        'Endpoint.Port',
+      ],
+    },
+    AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+  };
+  const environment = {
+    Variables: variables,
+  };
+  const vpcConfig = {
+
+    SecurityGroupIds: [
+      {
+        'Fn::GetAtt': [
+          'testconstructtestdbsinglSecurityGroup59C76A1D',
+          'GroupId',
+        ],
+      },
+    ],
+    SubnetIds: [
+      {
+        Ref: 'testvpcPrivateSubnet1Subnet865FB50A',
+      },
+      {
+        Ref: 'testvpcPrivateSubnet2Subnet23D3396F',
+      },
+    ],
+  };
+
+  const commonProps = {
+    Role: role,
+    Environment: environment,
+    Handler: 'index.handler',
+    Runtime: 'nodejs12.x',
+    Timeout: 15,
+    VpcConfig: vpcConfig,
+  };
+
+
   beforeEach(() => {
     app = new App();
     stack = new Stack(app, 'test-stack');
@@ -34,54 +91,16 @@ describe('DatabaseUser', () => {
 
   it('Creates Lambda using db root secret', () => {
     createStack();
+
     expect(stack).toHaveResource('AWS::Lambda::Function', {
-      Role: {
-        'Fn::GetAtt': [
-          'SingletonLambdatestconstructtestdbServiceRole6B2FC052',
-          'Arn',
-        ],
-      },
+      ...commonProps,
       Environment: {
         Variables: {
-          ENGINE: 'mysql',
+          ...variables,
           SECRET_ARN: {
             Ref: 'testdbSecretAttachmentA0E468D9',
           },
-          DATABASE_HOST: {
-            'Fn::GetAtt': [
-              'testdb9A2744AA',
-              'Endpoint.Address',
-            ],
-          },
-          DATABASE_PORT: {
-            'Fn::GetAtt': [
-              'testdb9A2744AA',
-              'Endpoint.Port',
-            ],
-          },
-          AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
         },
-      },
-      Handler: 'index.handler',
-      Runtime: 'nodejs12.x',
-      Timeout: 60,
-      VpcConfig: {
-        SecurityGroupIds: [
-          {
-            'Fn::GetAtt': [
-              'SingletonLambdatestconstructtestdbSecurityGroup8F79B3EC',
-              'GroupId',
-            ],
-          },
-        ],
-        SubnetIds: [
-          {
-            Ref: 'testvpcPrivateSubnet1Subnet865FB50A',
-          },
-          {
-            Ref: 'testvpcPrivateSubnet2Subnet23D3396F',
-          },
-        ],
       },
     });
   });
@@ -91,53 +110,14 @@ describe('DatabaseUser', () => {
       secret: new Secret(stack, 'secret', {}),
     });
     expect(stack).toHaveResource('AWS::Lambda::Function', {
-      Role: {
-        'Fn::GetAtt': [
-          'SingletonLambdatestconstructtestdbServiceRole6B2FC052',
-          'Arn',
-        ],
-      },
+      ...commonProps,
       Environment: {
         Variables: {
-          ENGINE: 'mysql',
+          ...variables,
           SECRET_ARN: {
             Ref: 'secret4DA88516',
           },
-          DATABASE_HOST: {
-            'Fn::GetAtt': [
-              'testdb9A2744AA',
-              'Endpoint.Address',
-            ],
-          },
-          DATABASE_PORT: {
-            'Fn::GetAtt': [
-              'testdb9A2744AA',
-              'Endpoint.Port',
-            ],
-          },
-          AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
         },
-      },
-      Handler: 'index.handler',
-      Runtime: 'nodejs12.x',
-      Timeout: 60,
-      VpcConfig: {
-        SecurityGroupIds: [
-          {
-            'Fn::GetAtt': [
-              'SingletonLambdatestconstructtestdbSecurityGroup8F79B3EC',
-              'GroupId',
-            ],
-          },
-        ],
-        SubnetIds: [
-          {
-            Ref: 'testvpcPrivateSubnet1Subnet865FB50A',
-          },
-          {
-            Ref: 'testvpcPrivateSubnet2Subnet23D3396F',
-          },
-        ],
       },
     });
   });
@@ -160,10 +140,10 @@ describe('DatabaseUser', () => {
         ],
         Version: '2012-10-17',
       },
-      PolicyName: 'SingletonLambdatestconstructtestdbServiceRoleDefaultPolicyA1376FC8',
+      PolicyName: 'testconstructtestdbsinglServiceRoleDefaultPolicyFC217E5C',
       Roles: [
         {
-          Ref: 'SingletonLambdatestconstructtestdbServiceRole6B2FC052',
+          Ref: 'testconstructtestdbsinglServiceRole6B7C76BD',
         },
       ],
     });
@@ -174,7 +154,7 @@ describe('DatabaseUser', () => {
     expect(stack).toHaveResource('AWS::CloudFormation::CustomResource', {
       ServiceToken: {
         'Fn::GetAtt': [
-          'SingletonLambdatestconstructtestdb714CC002',
+          'testconstructtestdbsinglDCE93DA6',
           'Arn',
         ],
       },
@@ -236,7 +216,7 @@ describe('DatabaseUser', () => {
       },
       SourceSecurityGroupId: {
         'Fn::GetAtt': [
-          'SingletonLambdatestconstructtestdbSecurityGroup8F79B3EC',
+          'testconstructtestdbsinglSecurityGroup59C76A1D',
           'GroupId',
         ],
       },
@@ -246,37 +226,6 @@ describe('DatabaseUser', () => {
     });
   });
 
-  it('uses connections when in the same stack', () => {
-    createStack();
-    expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
-      IpProtocol: 'tcp',
-      Description: 'from teststackSingletonLambdatestconstructtestdbSecurityGroup974E0E5B:{IndirectPort}',
-      FromPort: {
-        'Fn::GetAtt': [
-          'testdb9A2744AA',
-          'Endpoint.Port',
-        ],
-      },
-      GroupId: {
-        'Fn::GetAtt': [
-          'testdbSecurityGroup7744B8EE',
-          'GroupId',
-        ],
-      },
-      SourceSecurityGroupId: {
-        'Fn::GetAtt': [
-          'SingletonLambdatestconstructtestdbSecurityGroup8F79B3EC',
-          'GroupId',
-        ],
-      },
-      ToPort: {
-        'Fn::GetAtt': [
-          'testdb9A2744AA',
-          'Endpoint.Port',
-        ],
-      },
-    });
-  });
 
   it('lambda is specific to the database', () => {
     createStack();
