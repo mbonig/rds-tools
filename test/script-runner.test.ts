@@ -63,6 +63,4 @@ describe('getProvider', () => {
   it('works for sqlserver-web', () => {
     expect(testProvider('sqlserver-web')).toBeInstanceOf(MsSqlProvider);
   });
-
-
 });
