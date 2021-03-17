@@ -41,7 +41,7 @@ project.npmignore.exclude('cdk.context.json', '.cdk.staging/', '.idea/', 'cdk.ou
 project.npmignore.include('./lib/handlers/*');
 
 project.compileTask.exec('npm i', { cwd: path.join('.', 'src', 'layer', 'nodejs') });
-project.compileTask.exec('jsii --silence-warnings=reserved-word --no-fix-peer-dependencies && jsii-docgen && cp src/handlers/*.ts lib/handlers/');
+project.compileTask.exec('jsii --silence-warnings=reserved-word --no-fix-peer-dependencies && jsii-docgen && cp src/handlers/*.ts lib/handlers/ && cp src/handlers/cfn-response.js lib/handlers/');
 
 
 project.synth();

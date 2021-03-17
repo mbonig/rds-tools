@@ -49,7 +49,7 @@
           "cwd": "src/layer/nodejs"
         },
         {
-          "exec": "jsii --silence-warnings=reserved-word --no-fix-peer-dependencies && jsii-docgen && cp src/handlers/*.ts lib/handlers/"
+          "exec": "jsii --silence-warnings=reserved-word --no-fix-peer-dependencies && jsii-docgen && cp src/handlers/*.ts lib/handlers/ && cp src/handlers/cfn-response.js lib/handlers/"
         }
       ]
     },
