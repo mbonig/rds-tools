@@ -12,11 +12,11 @@ export function getProvider(props: {
   username: string;
   password: string;
   host: string;
-  databaseName: string;
+  databaseName?: string;
   engine: string;
   port?: string;
 }): IProvider {
-  let commonProps = {
+  const commonProps = {
     host: props.host,
     port: props.port,
     username: props.username,
@@ -69,7 +69,7 @@ export const innerHandler = async (event: any, context: any) => {
     throw new Error('Could not determine an engine type. Please open an Issue.');
   }
 
-  const { script } = event.ResourceProperties;
+  const { script, databaseName } = event.ResourceProperties;
 
   console.log('Getting secret...');
   const { SecretString: powerUserSecretString } = await sm.getSecretValue({ SecretId: powerUserSecretArn }).promise();
@@ -82,8 +82,6 @@ export const innerHandler = async (event: any, context: any) => {
     password,
   } = JSON.parse(powerUserSecretString);
 
-  // this needs to move. Probably to the ResourceProperties
-  let databaseName = 'master';
   const provider = getProvider({
     host: databaseHost,
     port: databasePort,

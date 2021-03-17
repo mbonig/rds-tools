@@ -11,7 +11,7 @@ export class MsSqlProvider implements IProvider {
   private readonly port: string;
 
   constructor(props: {
-    databaseName: string;
+    databaseName?: string;
     host: string;
     password: string;
     username: string;
@@ -20,7 +20,7 @@ export class MsSqlProvider implements IProvider {
     this.username = props.username;
     this.password = props.password;
     this.host = props.host;
-    this.databaseName = props.databaseName;
+    this.databaseName = props.databaseName || 'master';
     this.port = props.port || '3306';
   }
 

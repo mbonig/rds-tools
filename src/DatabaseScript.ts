@@ -6,9 +6,18 @@ import { NodejsFunction, NodejsFunctionProps } from '@aws-cdk/aws-lambda-nodejs'
 import { RetentionDays } from '@aws-cdk/aws-logs';
 import { DatabaseInstance } from '@aws-cdk/aws-rds';
 import { ISecret } from '@aws-cdk/aws-secretsmanager';
-import { CfnCustomResource, CfnResource, Construct, CustomResource, Duration, Stack } from '@aws-cdk/core';
+import { Construct, CustomResource, Duration, Stack } from '@aws-cdk/core';
 
 export interface DatabaseScriptProps {
+  /**
+   * An optional databaseName. If none is provided then it will be the default for the rds instance, as defined by the AWS docs.
+   *
+   * mysql - mysql
+   * mssql - master
+   * postgres - postgres
+   *
+   */
+  readonly databaseName?: string;
   /**
    * The database instance to run the script against
    */
@@ -37,6 +46,7 @@ export class DatabaseScript extends Construct {
       throw new Error('You must either provide a secret or there must be one available on the databaseInstance');
     }
 
+    // todo: probably need to support BYOL (Bring Your Own Lambda)
     const handler = this.ensureLambda(`${id}-${props.databaseInstance.node.id}`, {
       entry: path.join(__dirname, 'handlers', 'script-runner.ts'),
       handler: 'handler',
@@ -72,16 +82,14 @@ export class DatabaseScript extends Construct {
       description: 'access from lambda handler to database',
     });
 
-    const cr = new CustomResource(this, `${id}-customResource`, {
+    new CustomResource(this, `${id}-customResource`, {
       serviceToken: handler.functionArn,
       properties: {
         script: props.script,
+        databaseName: props.databaseName,
       },
     });
-
-    (cr.node.defaultChild as CfnCustomResource).addDependsOn(props.databaseInstance.vpc.node.defaultChild as CfnResource);
   }
-
 
   private ensureLambda(id: string, props: NodejsFunctionProps): NodejsFunction {
     // TODO: Copy-pasted from CDK codebase until

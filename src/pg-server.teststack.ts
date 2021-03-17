@@ -1,11 +1,11 @@
 import { Vpc } from '@aws-cdk/aws-ec2';
-import { DatabaseInstance, DatabaseInstanceEngine, SqlServerEngineVersion } from '@aws-cdk/aws-rds';
+import { DatabaseInstance, DatabaseInstanceEngine, PostgresEngineVersion } from '@aws-cdk/aws-rds';
 import { App, Stack } from '@aws-cdk/core';
 // @ts-ignore
 import { DatabaseScript } from '.';
 
 const app = new App();
-let baseId = 'sql-server-test-stack';
+let baseId = 'pg-server-test-stack';
 const stack = new Stack(app, baseId +'-database', {
   env: {
     region: 'us-east-1',
@@ -17,7 +17,7 @@ const vpc = new Vpc(stack, 'test-vpc', {
 });
 // @ts-ignore
 const databaseInstance = new DatabaseInstance(stack, 'test-database', {
-  engine: DatabaseInstanceEngine.sqlServerWeb({ version: SqlServerEngineVersion.VER_15_00_4043_16_V1 }),
+  engine: DatabaseInstanceEngine.postgres({ version: PostgresEngineVersion.VER_12_5 }),
   vpc: vpc,
 });
 
