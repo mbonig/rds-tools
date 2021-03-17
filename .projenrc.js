@@ -24,8 +24,10 @@ const project = new AwsCdkConstructLibrary({
   repositoryUrl: 'https://github.com/mbonig/rds-tools.git',
   cdkDependencies: cdkDeps,
   bundledDeps: ['mssql'],
-  deps: [],
-  devDeps: ['eslint', 'esbuild'],
+  devDeps: [
+    'eslint',
+    'esbuild',
+  ],
   peerDeps: cdkDeps,
   npmAccess: 'public',
 });
@@ -36,12 +38,12 @@ project.addFields({
   },
 });
 
-project.gitignore.exclude('cdk.context.json', '.cdk.staging/', '.idea/', 'cdk.out/');
+project.gitignore.exclude('cdk.context.json', '.cdk.staging/', '.idea/', 'cdk.out/', 'npm-cache/');
 project.npmignore.exclude('cdk.context.json', '.cdk.staging/', '.idea/', 'cdk.out/');
 project.npmignore.include('./lib/handlers/*');
 
-project.compileTask.exec('npm i', { cwd: path.join('.', 'src', 'layer', 'nodejs') });
-project.compileTask.exec('jsii --silence-warnings=reserved-word --no-fix-peer-dependencies && jsii-docgen && cp src/handlers/*.ts lib/handlers/ && cp src/handlers/cfn-response.js lib/handlers/');
+// project.compileTask.exec('npm i', { cwd: path.join('.', 'src', 'layer', 'nodejs') });
+project.compileTask.exec('jsii --silence-warnings=reserved-word --no-fix-peer-dependencies && jsii-docgen && cp src/handlers/*.ts lib/handlers/ && cp src/handlers/cfn-response.js lib/handlers/ && cp -R src/layer lib/layer');
 
 
 project.synth();

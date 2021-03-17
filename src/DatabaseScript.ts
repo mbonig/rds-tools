@@ -1,3 +1,5 @@
+import { execSync, ExecSyncOptions } from 'child_process';
+import * as os from 'os';
 import * as path from 'path';
 import { CfnSecurityGroupIngress } from '@aws-cdk/aws-ec2';
 import { slugify } from '@aws-cdk/aws-ec2/lib/util';
@@ -64,8 +66,40 @@ export class DatabaseScript extends Construct {
       timeout: Duration.seconds(15), // TODO: should be overridable
       logRetention: RetentionDays.ONE_DAY,
     });
+
+
+    const assetPath = path.join(__dirname, 'layer');
+
     handler.addLayers(new LayerVersion(this, 'deps-layer', {
-      code: Code.fromAsset(path.join(__dirname, 'layer')),
+      code: Code.fromAsset(assetPath, {
+        bundling: {
+          image: Runtime.NODEJS_12_X.bundlingDockerImage,
+          command: [
+            'bash', '-c',
+            'npm i && cp -r /asset-input/* /asset-output',
+          ],
+          environment: {
+            npm_config_cache: 'npm-cache',
+          },
+          user: 'root',
+          workingDirectory: '/asset-input/nodejs',
+          local: {
+            tryBundle(outputDir: string): boolean {
+              if (os.platform() !== 'linux') {
+                console.warn('When using local bundling on another OS besides linux, you may end up building dependencies that will not run on AWS Lambda. Please build on a linux OS if you run into issues.');
+              }
+              const execOptions: ExecSyncOptions = { stdio: ['ignore', process.stderr, 'inherit'] };
+              try {
+                execSync('npm install', { ...execOptions, cwd: '/asset-input/nodejs' });
+                execSync('cp -r /asset-input ' + outputDir, { ...execOptions });
+              } catch {
+                return false;
+              }
+              return true;
+            },
+          },
+        },
+      }),
     }));
 
     secret.grantRead(handler);
