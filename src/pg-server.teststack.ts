@@ -17,7 +17,7 @@ const vpc = new Vpc(stack, 'test-vpc', {
 });
 // @ts-ignore
 const databaseInstance = new DatabaseInstance(stack, 'test-database', {
-  engine: DatabaseInstanceEngine.postgres({ version: PostgresEngineVersion.VER_12_5 }),
+  engine: DatabaseInstanceEngine.postgres({ version: PostgresEngineVersion.VER_12_4 }),
   vpc: vpc,
 });
 

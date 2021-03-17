@@ -16,7 +16,7 @@ let cdkDeps = [
 const project = new AwsCdkConstructLibrary({
   author: 'Matthew Bonig',
   authorAddress: 'matthew.bonig@gmail.com',
-  cdkVersion: '1.92.0',
+  cdkVersion: '1.89.0',
   cdkVersionPinning: true,
   defaultReleaseBranch: 'master',
   jsiiFqn: 'matthewbonig.rdsTools',
