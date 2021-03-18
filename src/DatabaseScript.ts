@@ -90,8 +90,9 @@ export class DatabaseScript extends Construct {
               }
               const execOptions: ExecSyncOptions = { stdio: ['ignore', process.stderr, 'inherit'] };
               try {
-                execSync('npm install', { ...execOptions, cwd: '/asset-input/nodejs' });
-                execSync('cp -r /asset-input ' + outputDir, { ...execOptions });
+                const layerDir = path.join(__dirname, 'layer');
+                execSync('npm install', { ...execOptions, cwd: path.join(layerDir, 'nodejs') });
+                execSync(`cp -r ${layerDir} ${outputDir}`, { ...execOptions });
               } catch {
                 return false;
               }
