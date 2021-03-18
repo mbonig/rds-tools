@@ -1,5 +1,5 @@
-// import { execSync, ExecSyncOptions } from 'child_process';
-// import * as os from 'os';
+import { execSync, ExecSyncOptions } from 'child_process';
+import * as os from 'os';
 import * as path from 'path';
 import { CfnSecurityGroupIngress } from '@aws-cdk/aws-ec2';
 import { slugify } from '@aws-cdk/aws-ec2/lib/util';
@@ -76,30 +76,35 @@ export class DatabaseScript extends Construct {
           image: Runtime.NODEJS_12_X.bundlingDockerImage,
           command: [
             'bash', '-c',
-            'npm i && cp -r /asset-input/* /asset-output',
+            'echo npm i && cp -r /asset-input/* /asset-output',
           ],
           environment: {
             npm_config_cache: 'npm-cache',
           },
           user: 'root',
           workingDirectory: '/asset-input/nodejs',
-          // local: {
-          //   tryBundle(outputDir: string): boolean {
-          //     if (os.platform() !== 'linux') {
-          //       console.warn('When using local bundling on another OS besides linux, you may end up building dependencies that will not run on AWS Lambda. Please build on a linux OS if you run into issues.');
-          //     }
-          //     const execOptions: ExecSyncOptions = { stdio: ['ignore', process.stderr, 'inherit'] };
-          //     try {
-          //       const layerDir = path.join(__dirname, 'layer');
-          //       execSync('npm install', { ...execOptions, cwd: path.join(layerDir, 'nodejs') });
-          //       execSync(`mkdir -p ${outputDir}/nodejs/node_modules`, { ...execOptions });
-          //       execSync(`cp -r ${layerDir}/nodejs/node_modules/* ${outputDir}/nodejs/node_modules`, { ...execOptions });
-          //     } catch {
-          //       return false;
-          //     }
-          //     return true;
-          //   },
-          // },
+          local: {
+            tryBundle(outputDir: string): boolean {
+              console.log('Going to try local bundling...');
+              if (os.platform() !== 'linux') {
+                console.warn('When using local bundling on another OS besides linux, you may end up building dependencies that will not run on AWS Lambda. Please build on a linux OS if you run into issues.');
+              }
+              const execOptions: ExecSyncOptions = { stdio: ['ignore', process.stderr, 'inherit'] };
+              try {
+                const layerDir = path.join(__dirname, 'layer');
+                console.log('Running npm install');
+                execSync('npm install', { ...execOptions, cwd: path.join(layerDir, 'nodejs') });
+                console.log('Making the proper output dir');
+                execSync(`mkdir -p ${outputDir}/nodejs/node_modules`, { ...execOptions });
+                console.log(`Copying ${layerDir}/nodejs/node_modules/* to ${outputDir}/nodejs/node_modules`);
+                execSync(`cp -r ${layerDir}/nodejs/node_modules/* ${outputDir}/nodejs/node_modules`, { ...execOptions });
+
+              } catch {
+                return false;
+              }
+              return true;
+            },
+          },
         },
       }),
     }));
