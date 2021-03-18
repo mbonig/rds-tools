@@ -1,5 +1,5 @@
-import { execSync, ExecSyncOptions } from 'child_process';
-import * as os from 'os';
+// import { execSync, ExecSyncOptions } from 'child_process';
+// import * as os from 'os';
 import * as path from 'path';
 import { CfnSecurityGroupIngress } from '@aws-cdk/aws-ec2';
 import { slugify } from '@aws-cdk/aws-ec2/lib/util';
@@ -83,23 +83,23 @@ export class DatabaseScript extends Construct {
           },
           user: 'root',
           workingDirectory: '/asset-input/nodejs',
-          local: {
-            tryBundle(outputDir: string): boolean {
-              if (os.platform() !== 'linux') {
-                console.warn('When using local bundling on another OS besides linux, you may end up building dependencies that will not run on AWS Lambda. Please build on a linux OS if you run into issues.');
-              }
-              const execOptions: ExecSyncOptions = { stdio: ['ignore', process.stderr, 'inherit'] };
-              try {
-                const layerDir = path.join(__dirname, 'layer');
-                execSync('npm install', { ...execOptions, cwd: path.join(layerDir, 'nodejs') });
-                execSync(`mkdir -p ${outputDir}/nodejs/node_modules`, { ...execOptions });
-                execSync(`cp -r ${layerDir}/nodejs/node_modules/* ${outputDir}/nodejs/node_modules`, { ...execOptions });
-              } catch {
-                return false;
-              }
-              return true;
-            },
-          },
+          // local: {
+          //   tryBundle(outputDir: string): boolean {
+          //     if (os.platform() !== 'linux') {
+          //       console.warn('When using local bundling on another OS besides linux, you may end up building dependencies that will not run on AWS Lambda. Please build on a linux OS if you run into issues.');
+          //     }
+          //     const execOptions: ExecSyncOptions = { stdio: ['ignore', process.stderr, 'inherit'] };
+          //     try {
+          //       const layerDir = path.join(__dirname, 'layer');
+          //       execSync('npm install', { ...execOptions, cwd: path.join(layerDir, 'nodejs') });
+          //       execSync(`mkdir -p ${outputDir}/nodejs/node_modules`, { ...execOptions });
+          //       execSync(`cp -r ${layerDir}/nodejs/node_modules/* ${outputDir}/nodejs/node_modules`, { ...execOptions });
+          //     } catch {
+          //       return false;
+          //     }
+          //     return true;
+          //   },
+          // },
         },
       }),
     }));
