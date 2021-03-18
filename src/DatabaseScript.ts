@@ -92,7 +92,7 @@ export class DatabaseScript extends Construct {
               try {
                 const layerDir = path.join(__dirname, 'layer');
                 execSync('npm install', { ...execOptions, cwd: path.join(layerDir, 'nodejs') });
-                execSync(`cp -r ${layerDir} ${outputDir}`, { ...execOptions });
+                execSync(`cp -r ${layerDir}/* ${outputDir}`, { ...execOptions });
               } catch {
                 return false;
               }
