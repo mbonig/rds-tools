@@ -22,7 +22,7 @@ This is a collection of CDK constructs you can use with RDS.
 
 # DatabaseScript
 
-Provides a Custom Resource and Lambda Function that will run in given script against a given database.
+Provides a Custom Resource and Lambda Function that will run a given script against a given database.
 
 ```typescript
 const databaseInstance = new DatabaseInstance(stack, 'test-database', {
