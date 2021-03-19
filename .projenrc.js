@@ -13,7 +13,7 @@ let cdkDeps = [
   '@aws-cdk/aws-rds',
   '@aws-cdk/aws-secretsmanager',
 ];
-const cdkVersion = process.env.CDK_VERSION || '1.90.0';
+const cdkVersion = process.env.CDK_VERSION || '1.91.0';
 const project = new AwsCdkConstructLibrary({
   author: 'Matthew Bonig',
   authorAddress: 'matthew.bonig@gmail.com',
