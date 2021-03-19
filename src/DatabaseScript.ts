@@ -92,11 +92,8 @@ export class DatabaseScript extends Construct {
               const execOptions: ExecSyncOptions = { stdio: ['ignore', process.stderr, 'inherit'] };
               try {
                 const layerDir = path.join(__dirname, 'layer');
-                console.log('Running npm install');
                 execSync('npm install', { ...execOptions, cwd: path.join(layerDir, 'nodejs') });
-                console.log('Making the proper output dir');
                 execSync(`mkdir -p ${outputDir}/nodejs/node_modules`, { ...execOptions });
-                console.log(`Copying ${layerDir}/nodejs/node_modules/* to ${outputDir}/nodejs/node_modules`);
                 execSync(`cp -r ${layerDir}/nodejs/node_modules/* ${outputDir}/nodejs/node_modules`, { ...execOptions });
 
               } catch {

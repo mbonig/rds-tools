@@ -29,7 +29,7 @@
     "organization": false
   },
   "devDependencies": {
-    "@aws-cdk/assert": "1.89.0",
+    "@aws-cdk/assert": "1.90.0",
     "@types/jest": "^26.0.20",
     "@types/node": "^10.17.0",
     "@typescript-eslint/eslint-plugin": "^4.3.0",
@@ -46,38 +46,35 @@
     "jsii-docgen": "^1.8.38",
     "jsii-pacmak": "^1.20.1",
     "json-schema": "^0.3.0",
-    "projen": "^0.17.15",
+    "projen": "^0.17.16",
     "standard-version": "^9",
     "ts-jest": "^26.5.1",
     "typescript": "^3.9.5"
   },
   "peerDependencies": {
-    "@aws-cdk/aws-ec2": "1.89.0",
-    "@aws-cdk/aws-events": "1.89.0",
-    "@aws-cdk/aws-events-targets": "1.89.0",
-    "@aws-cdk/aws-lambda": "1.89.0",
-    "@aws-cdk/aws-lambda-nodejs": "1.89.0",
-    "@aws-cdk/aws-logs": "1.89.0",
-    "@aws-cdk/aws-rds": "1.89.0",
-    "@aws-cdk/aws-secretsmanager": "1.89.0",
-    "@aws-cdk/core": "1.89.0",
+    "@aws-cdk/aws-ec2": "1.90.0",
+    "@aws-cdk/aws-events": "1.90.0",
+    "@aws-cdk/aws-events-targets": "1.90.0",
+    "@aws-cdk/aws-lambda": "1.90.0",
+    "@aws-cdk/aws-lambda-nodejs": "1.90.0",
+    "@aws-cdk/aws-logs": "1.90.0",
+    "@aws-cdk/aws-rds": "1.90.0",
+    "@aws-cdk/aws-secretsmanager": "1.90.0",
+    "@aws-cdk/core": "1.90.0",
     "constructs": "^3.2.27"
   },
   "dependencies": {
-    "@aws-cdk/aws-ec2": "1.89.0",
-    "@aws-cdk/aws-events": "1.89.0",
-    "@aws-cdk/aws-events-targets": "1.89.0",
-    "@aws-cdk/aws-lambda": "1.89.0",
-    "@aws-cdk/aws-lambda-nodejs": "1.89.0",
-    "@aws-cdk/aws-logs": "1.89.0",
-    "@aws-cdk/aws-rds": "1.89.0",
-    "@aws-cdk/aws-secretsmanager": "1.89.0",
-    "@aws-cdk/core": "1.89.0",
-    "mssql": "^6.3.1"
+    "@aws-cdk/aws-ec2": "1.90.0",
+    "@aws-cdk/aws-events": "1.90.0",
+    "@aws-cdk/aws-events-targets": "1.90.0",
+    "@aws-cdk/aws-lambda": "1.90.0",
+    "@aws-cdk/aws-lambda-nodejs": "1.90.0",
+    "@aws-cdk/aws-logs": "1.90.0",
+    "@aws-cdk/aws-rds": "1.90.0",
+    "@aws-cdk/aws-secretsmanager": "1.90.0",
+    "@aws-cdk/core": "1.90.0"
   },
-  "bundledDependencies": [
-    "mssql"
-  ],
+  "bundledDependencies": [],
   "keywords": [
     "cdk"
   ],

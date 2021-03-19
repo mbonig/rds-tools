@@ -13,17 +13,17 @@ let cdkDeps = [
   '@aws-cdk/aws-rds',
   '@aws-cdk/aws-secretsmanager',
 ];
+const cdkVersion = process.env.CDK_VERSION || '1.90.0';
 const project = new AwsCdkConstructLibrary({
   author: 'Matthew Bonig',
   authorAddress: 'matthew.bonig@gmail.com',
-  cdkVersion: '1.89.0',
+  cdkVersion: cdkVersion,
   cdkVersionPinning: true,
   defaultReleaseBranch: 'master',
   jsiiFqn: 'matthewbonig.rdsTools',
   name: '@matthewbonig/rds-tools',
   repositoryUrl: 'https://github.com/mbonig/rds-tools.git',
   cdkDependencies: cdkDeps,
-  bundledDeps: ['mssql'],
   devDeps: [
     'eslint',
     'esbuild',
