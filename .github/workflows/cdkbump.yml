@@ -28,7 +28,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
-          branch: ${GITHUB_REF#refs/heads/}
+          branch: master
           title: CDK bump to ${{ steps.extract_branch.outputs.branch }}
     container:
       image: jsii/superchain
