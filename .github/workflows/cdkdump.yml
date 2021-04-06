@@ -22,6 +22,6 @@ jobs:
           git config user.name "Auto-bump"
           git config user.email "github-actions@github.com"
       - name: Commit and push changes (if any)
-        run: 'git diff --exit-code || (git commit -am "chore: bumping CDK version" && git push origin'
+        run: 'git diff --exit-code || (git commit -am "chore: bumping CDK version" && git push origin)'
     container:
       image: jsii/superchain
