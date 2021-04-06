@@ -5,8 +5,6 @@
     "url": "https://github.com/mbonig/rds-tools.git"
   },
   "scripts": {
-    "projen": "npx projen",
-    "start": "npx projen start",
     "clobber": "npx projen clobber",
     "compile": "npx projen compile",
     "test:compile": "npx projen test:compile",
@@ -21,7 +19,9 @@
     "package": "npx projen package",
     "eslint": "npx projen eslint",
     "compat": "npx projen compat",
-    "docgen": "npx projen docgen"
+    "docgen": "npx projen docgen",
+    "projen": "npx projen",
+    "start": "npx projen start"
   },
   "author": {
     "name": "Matthew Bonig",
@@ -29,7 +29,7 @@
     "organization": false
   },
   "devDependencies": {
-    "@aws-cdk/assert": "1.93.0",
+    "@aws-cdk/assert": "1.97.0",
     "@types/jest": "^26.0.20",
     "@types/node": "^10.17.0",
     "@typescript-eslint/eslint-plugin": "^4.3.0",
@@ -46,33 +46,33 @@
     "jsii-docgen": "^1.8.38",
     "jsii-pacmak": "^1.20.1",
     "json-schema": "^0.3.0",
-    "projen": "^0.17.16",
+    "projen": "^0.17.27",
     "standard-version": "^9",
     "ts-jest": "^26.5.1",
     "typescript": "^3.9.5"
   },
   "peerDependencies": {
-    "@aws-cdk/aws-ec2": "1.93.0",
-    "@aws-cdk/aws-events": "1.93.0",
-    "@aws-cdk/aws-events-targets": "1.93.0",
-    "@aws-cdk/aws-lambda": "1.93.0",
-    "@aws-cdk/aws-lambda-nodejs": "1.93.0",
-    "@aws-cdk/aws-logs": "1.93.0",
-    "@aws-cdk/aws-rds": "1.93.0",
-    "@aws-cdk/aws-secretsmanager": "1.93.0",
-    "@aws-cdk/core": "1.93.0",
+    "@aws-cdk/aws-ec2": "1.97.0",
+    "@aws-cdk/aws-events": "1.97.0",
+    "@aws-cdk/aws-events-targets": "1.97.0",
+    "@aws-cdk/aws-lambda": "1.97.0",
+    "@aws-cdk/aws-lambda-nodejs": "1.97.0",
+    "@aws-cdk/aws-logs": "1.97.0",
+    "@aws-cdk/aws-rds": "1.97.0",
+    "@aws-cdk/aws-secretsmanager": "1.97.0",
+    "@aws-cdk/core": "1.97.0",
     "constructs": "^3.2.27"
   },
   "dependencies": {
-    "@aws-cdk/aws-ec2": "1.93.0",
-    "@aws-cdk/aws-events": "1.93.0",
-    "@aws-cdk/aws-events-targets": "1.93.0",
-    "@aws-cdk/aws-lambda": "1.93.0",
-    "@aws-cdk/aws-lambda-nodejs": "1.93.0",
-    "@aws-cdk/aws-logs": "1.93.0",
-    "@aws-cdk/aws-rds": "1.93.0",
-    "@aws-cdk/aws-secretsmanager": "1.93.0",
-    "@aws-cdk/core": "1.93.0"
+    "@aws-cdk/aws-ec2": "1.97.0",
+    "@aws-cdk/aws-events-targets": "1.97.0",
+    "@aws-cdk/aws-events": "1.97.0",
+    "@aws-cdk/aws-lambda-nodejs": "1.97.0",
+    "@aws-cdk/aws-lambda": "1.97.0",
+    "@aws-cdk/aws-logs": "1.97.0",
+    "@aws-cdk/aws-rds": "1.97.0",
+    "@aws-cdk/aws-secretsmanager": "1.97.0",
+    "@aws-cdk/core": "1.97.0"
   },
   "bundledDependencies": [],
   "keywords": [
