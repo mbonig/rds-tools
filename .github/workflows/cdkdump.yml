@@ -17,8 +17,6 @@ jobs:
         shell: bash
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/bump/})"
         id: extract_branch
-      - name: Install dependencies
-        run: yarn install --check-files --frozen-lockfile
       - name: Synthesize project files
         run: CDK_VERSION=${{ steps.extract_branch.outputs.branch }} npx projen
       - name: Set git identity
