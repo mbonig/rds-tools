@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Extract branch name
         shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/bump})"
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/bump/})"
         id: extract_branch
       - name: Install dependencies
         run: yarn install --check-files --frozen-lockfile
