@@ -32,6 +32,7 @@ const project = new AwsCdkConstructLibrary({
   peerDeps: cdkDeps,
   npmAccess: 'public',
   releaseWorkflow: false,
+  projenDuringBuild: false,
 });
 
 project.addFields({
