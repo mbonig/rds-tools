@@ -16,7 +16,7 @@ jobs:
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/bump/})"
         id: extract_branch
       - name: Synthesize project files
-        run: CDK_VERSION=${{ steps.extract_branch.outputs.branch }} npx projen --no-post
+        run: CDK_VERSION=${{ steps.extract_branch.outputs.branch }} npx projen
       - name: Set git identity
         run: |-
           git config user.name "Auto-bump"
