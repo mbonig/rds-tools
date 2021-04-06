@@ -25,5 +25,7 @@ jobs:
           git config user.email "github-actions@github.com"
       - name: Commit and push changes (if any)
         run: 'git diff --exit-code || ((git add package.json yarn.lock .projen/deps.json) && (git commit -m "chore: bumping CDK version" && git push origin))'
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
     container:
       image: jsii/superchain
