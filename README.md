@@ -14,6 +14,9 @@
 
 ---
 
+There are multiple versions of this library published. You should be using the v0.X.X versions for now.
+There are versions published that match the CDK version they depend on, but don't use those.
+
 <!--END STABILITY BANNER-->
 
 This is a collection of CDK constructs you can use with RDS.
