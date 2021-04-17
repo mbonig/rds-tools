@@ -5409,10 +5409,10 @@ progress@^2.0.0:
   resolved "https://registry.yarnpkg.com/progress/-/progress-2.0.3.tgz#7e8cf8d8f5b8f239c1bc68beb4eb78567d572ef8"
   integrity sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==
 
-projen@^0.17.33:
-  version "0.17.33"
-  resolved "https://registry.yarnpkg.com/projen/-/projen-0.17.33.tgz#4229dd758f9a60adf2d254d66758c9c29bc5afbd"
-  integrity sha512-s1EZyVTjECow0/qNl6tY/Zf8TfiwkurUPWT4y0/URCxfsml0HE66b+mc1rcHVyKMMUMm/Y9sQZFnUv1xs2rqrw==
+projen@^0.17.44:
+  version "0.17.44"
+  resolved "https://registry.yarnpkg.com/projen/-/projen-0.17.44.tgz#b1917ac8a5116d4a59dbfbf3b787a82530dc02b4"
+  integrity sha512-8nFtkzRF4rPzZXVcSEbNxbz7H4fVfqe9dKN7tCx1bVeIbNbCosNAhpXOUfDyeqZs8pHMN9wfxLf7uAPHdU7kRw==
   dependencies:
     "@iarna/toml" "^2.2.5"
     chalk "^4.1.0"
@@ -6308,9 +6308,9 @@ table@^6.0.4:
     string-width "^4.2.0"
 
 table@^6.0.9:
-  version "6.0.9"
-  resolved "https://registry.yarnpkg.com/table/-/table-6.0.9.tgz#790a12bf1e09b87b30e60419bafd6a1fd85536fb"
-  integrity sha512-F3cLs9a3hL1Z7N4+EkSscsel3z55XT950AvB05bwayrNg5T1/gykXtigioTAjbltvbMSJvvhFCbnf6mX+ntnJQ==
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/table/-/table-6.1.0.tgz#676a0cfb206008b59e783fcd94ef8ba7d67d966c"
+  integrity sha512-T4G5KMmqIk6X87gLKWyU5exPpTjLjY5KyrFWaIjv3SvgaIUGXV7UEzGEnZJdTA38/yUS6f9PlKezQ0bYXG3iIQ==
   dependencies:
     ajv "^8.0.1"
     is-boolean-object "^1.1.0"
