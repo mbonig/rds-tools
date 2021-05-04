@@ -2,57 +2,57 @@
   "dependencies": [
     {
       "name": "@aws-cdk/assert",
-      "version": "1.98.0",
+      "version": "1.102.0",
       "type": "build"
     },
     {
       "name": "@aws-cdk/aws-ec2",
-      "version": "1.98.0",
+      "version": "1.102.0",
       "type": "build"
     },
     {
       "name": "@aws-cdk/aws-events-targets",
-      "version": "1.98.0",
+      "version": "1.102.0",
       "type": "build"
     },
     {
       "name": "@aws-cdk/aws-events",
-      "version": "1.98.0",
+      "version": "1.102.0",
       "type": "build"
     },
     {
       "name": "@aws-cdk/aws-lambda-nodejs",
-      "version": "1.98.0",
+      "version": "1.102.0",
       "type": "build"
     },
     {
       "name": "@aws-cdk/aws-lambda",
-      "version": "1.98.0",
+      "version": "1.102.0",
       "type": "build"
     },
     {
       "name": "@aws-cdk/aws-logs",
-      "version": "1.98.0",
+      "version": "1.102.0",
       "type": "build"
     },
     {
       "name": "@aws-cdk/aws-rds",
-      "version": "1.98.0",
+      "version": "1.102.0",
       "type": "build"
     },
     {
       "name": "@aws-cdk/aws-rds",
-      "version": "1.98.0",
+      "version": "1.102.0",
       "type": "build"
     },
     {
       "name": "@aws-cdk/aws-secretsmanager",
-      "version": "1.98.0",
+      "version": "1.102.0",
       "type": "build"
     },
     {
       "name": "@aws-cdk/core",
-      "version": "1.98.0",
+      "version": "1.102.0",
       "type": "build"
     },
     {
@@ -127,7 +127,7 @@
     },
     {
       "name": "projen",
-      "version": "^0.17.44",
+      "version": "^0.17.75",
       "type": "build"
     },
     {
@@ -149,7 +149,7 @@
     },
     {
       "name": "@aws-cdk/aws-ec2",
-      "version": "1.98.0",
+      "version": "1.102.0",
       "type": "peer"
     },
     {
@@ -162,12 +162,12 @@
     },
     {
       "name": "@aws-cdk/aws-events-targets",
-      "version": "1.98.0",
+      "version": "1.102.0",
       "type": "peer"
     },
     {
       "name": "@aws-cdk/aws-events",
-      "version": "1.98.0",
+      "version": "1.102.0",
       "type": "peer"
     },
     {
@@ -180,12 +180,12 @@
     },
     {
       "name": "@aws-cdk/aws-lambda-nodejs",
-      "version": "1.98.0",
+      "version": "1.102.0",
       "type": "peer"
     },
     {
       "name": "@aws-cdk/aws-lambda",
-      "version": "1.98.0",
+      "version": "1.102.0",
       "type": "peer"
     },
     {
@@ -194,7 +194,7 @@
     },
     {
       "name": "@aws-cdk/aws-logs",
-      "version": "1.98.0",
+      "version": "1.102.0",
       "type": "peer"
     },
     {
@@ -207,12 +207,12 @@
     },
     {
       "name": "@aws-cdk/aws-rds",
-      "version": "1.98.0",
+      "version": "1.102.0",
       "type": "peer"
     },
     {
       "name": "@aws-cdk/aws-rds",
-      "version": "1.98.0",
+      "version": "1.102.0",
       "type": "peer"
     },
     {
@@ -221,7 +221,7 @@
     },
     {
       "name": "@aws-cdk/aws-secretsmanager",
-      "version": "1.98.0",
+      "version": "1.102.0",
       "type": "peer"
     },
     {
@@ -230,7 +230,7 @@
     },
     {
       "name": "@aws-cdk/core",
-      "version": "1.98.0",
+      "version": "1.102.0",
       "type": "peer"
     },
     {
