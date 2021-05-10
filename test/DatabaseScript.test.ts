@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 
-import { Vpc } from '@aws-cdk/aws-ec2';
+import { Port, SecurityGroup, Vpc } from '@aws-cdk/aws-ec2';
 import { CfnFunction } from '@aws-cdk/aws-lambda';
 import { DatabaseInstance, DatabaseInstanceEngine, MysqlEngineVersion } from '@aws-cdk/aws-rds';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
@@ -21,19 +21,6 @@ describe('DatabaseUser', () => {
   };
 
   const variables = {
-    ENGINE: 'mysql',
-    DATABASE_HOST: {
-      'Fn::GetAtt': [
-        'testdb9A2744AA',
-        'Endpoint.Address',
-      ],
-    },
-    DATABASE_PORT: {
-      'Fn::GetAtt': [
-        'testdb9A2744AA',
-        'Endpoint.Port',
-      ],
-    },
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
   };
   const environment = {
@@ -169,50 +156,21 @@ describe('DatabaseUser', () => {
       vpc,
     });
 
-    const secondStack = new Stack(app);
-    new DatabaseScript(secondStack, 'test-construct', {
+    new DatabaseScript(stack, 'test-construct', {
       databaseInstance: testDatabaseInstance,
       script: 'SELECT * FROM table',
       secret: testDatabaseInstance.secret,
-    });
+    }).bind(new SecurityGroup(stack, 'sg12', { vpc }), Port.tcp(1433));
 
-    expect(stack).not.toHaveResource('AWS::EC2::SecurityGroupIngress', {
+    expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
       IpProtocol: 'tcp',
-      Description: 'from teststackSingletonLambdatestconstructSecurityGroupB05F5552:{IndirectPort}',
-      FromPort: {
-        'Fn::GetAtt': [
-          'testdb9A2744AA',
-          'Endpoint.Port',
-        ],
-      },
+      Description: 'access from Lambda testconstructtestdbsingl',
+      FromPort: 1433,
       GroupId: {
         'Fn::GetAtt': [
-          'testdbSecurityGroup7744B8EE',
+          'sg123BFB086F',
           'GroupId',
         ],
-      },
-      SourceSecurityGroupId: {
-        'Fn::GetAtt': [
-          'SingletonLambdatestconstructSecurityGroup41C6411D',
-          'GroupId',
-        ],
-      },
-      ToPort: {
-        'Fn::GetAtt': [
-          'testdb9A2744AA',
-          'Endpoint.Port',
-        ],
-      },
-    });
-
-    expect(secondStack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
-      IpProtocol: 'tcp',
-      Description: 'access from lambda handler to database',
-      FromPort: {
-        'Fn::ImportValue': 'test-stack:ExportsOutputFnGetAtttestdb9A2744AAEndpointPort44CC01FA',
-      },
-      GroupId: {
-        'Fn::ImportValue': 'test-stack:ExportsOutputFnGetAtttestdbSecurityGroup7744B8EEGroupId25B1B86D',
       },
       SourceSecurityGroupId: {
         'Fn::GetAtt': [
@@ -220,12 +178,9 @@ describe('DatabaseUser', () => {
           'GroupId',
         ],
       },
-      ToPort: {
-        'Fn::ImportValue': 'test-stack:ExportsOutputFnGetAtttestdb9A2744AAEndpointPort44CC01FA',
-      },
+      ToPort: 1433,
     });
   });
-
 
   it('lambda is specific to the database', () => {
     createStack();

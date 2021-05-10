@@ -1,9 +1,9 @@
 import { execSync, ExecSyncOptions } from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
-import { CfnSecurityGroupIngress } from '@aws-cdk/aws-ec2';
+import { IVpc, Port, SecurityGroup } from '@aws-cdk/aws-ec2';
 import { slugify } from '@aws-cdk/aws-ec2/lib/util';
-import { Code, LayerVersion, Runtime } from '@aws-cdk/aws-lambda';
+import { Code, IFunction, LayerVersion, Runtime } from '@aws-cdk/aws-lambda';
 import { NodejsFunction, NodejsFunctionProps } from '@aws-cdk/aws-lambda-nodejs';
 import { RetentionDays } from '@aws-cdk/aws-logs';
 import { DatabaseInstance } from '@aws-cdk/aws-rds';
@@ -11,6 +11,12 @@ import { ISecret } from '@aws-cdk/aws-secretsmanager';
 import { Construct, CustomResource, Duration, Stack } from '@aws-cdk/core';
 
 export interface DatabaseScriptProps {
+
+  /**
+   * The VPC for the Lambda Function to attach to. If one is not provide, it's assumed from the database instance.
+   */
+  readonly vpc?: IVpc;
+
   /**
    * An optional databaseName. If none is provided then it will be the default for the rds instance, as defined by the AWS docs.
    *
@@ -20,10 +26,11 @@ export interface DatabaseScriptProps {
    *
    */
   readonly databaseName?: string;
+
   /**
    * The database instance to run the script against
    */
-  readonly databaseInstance: DatabaseInstance;
+  readonly databaseInstance?: DatabaseInstance;
 
   /**
    * An optional secret that provides credentials for the database. Must have fields 'username' and 'password'
@@ -39,26 +46,29 @@ export interface DatabaseScriptProps {
 }
 
 export class DatabaseScript extends Construct {
+  private handler: IFunction;
 
   constructor(scope: Construct, id: string, props: DatabaseScriptProps) {
     super(scope, id);
 
-    const secret = props.secret || props.databaseInstance.secret;
+    const secret = props.secret || props.databaseInstance?.secret;
     if (!secret) {
       throw new Error('You must either provide a secret or there must be one available on the databaseInstance');
     }
 
+    const vpc = props.vpc || props.databaseInstance?.vpc;
+    if (!vpc) {
+      throw new Error('Please provide a VPC to use, either on the `vpc` prop or via the `databaseInstnace` prop.');
+    }
+
     // todo: probably need to support BYOL (Bring Your Own Lambda)
-    const handler = this.ensureLambda(`${id}-${props.databaseInstance.node.id}`, {
+    const handler = this.handler = this.ensureLambda(`${id}-${props.databaseInstance?.node.id}`, {
       entry: path.join(__dirname, 'handlers', 'script-runner.ts'),
       handler: 'handler',
       runtime: Runtime.NODEJS_12_X,
-      vpc: props.databaseInstance.vpc,
+      vpc: vpc,
       environment: {
         SECRET_ARN: secret.secretArn,
-        DATABASE_HOST: props.databaseInstance.dbInstanceEndpointAddress, // is it better to get these from the secret?
-        DATABASE_PORT: props.databaseInstance.dbInstanceEndpointPort,
-        ENGINE: props.databaseInstance.engine?.engineType!,
       },
       bundling: {
         externalModules: ['aws-sdk', 'mssql', 'promise-mysql', 'pg'],
@@ -92,7 +102,10 @@ export class DatabaseScript extends Construct {
               const execOptions: ExecSyncOptions = { stdio: ['ignore', process.stderr, 'inherit'] };
               try {
                 const layerDir = path.join(__dirname, 'layer');
-                execSync('npm install', { ...execOptions, cwd: path.join(layerDir, 'nodejs') });
+                execSync('npm install', {
+                  ...execOptions,
+                  cwd: path.join(layerDir, 'nodejs'),
+                });
                 execSync(`mkdir -p ${outputDir}/nodejs/node_modules`, { ...execOptions });
                 execSync(`cp -r ${layerDir}/nodejs/node_modules/* ${outputDir}/nodejs/node_modules`, { ...execOptions });
 
@@ -108,18 +121,6 @@ export class DatabaseScript extends Construct {
 
     secret.grantRead(handler);
 
-    // https://www.youtube.com/watch?v=EzWNBmjyv7Y
-    new CfnSecurityGroupIngress(this, 'SecurityGroupIngressFrom', {
-      // @ts-ignore
-      fromPort: props.databaseInstance.dbInstanceEndpointPort,
-      // @ts-ignore
-      toPort: props.databaseInstance.dbInstanceEndpointPort,
-      groupId: props.databaseInstance.connections.securityGroups[0].securityGroupId,
-      sourceSecurityGroupId: handler.connections.securityGroups[0].securityGroupId,
-      ipProtocol: 'tcp',
-      description: 'access from lambda handler to database',
-    });
-
     new CustomResource(this, `${id}-customResource`, {
       serviceToken: handler.functionArn,
       properties: {
@@ -127,6 +128,17 @@ export class DatabaseScript extends Construct {
         databaseName: props.databaseName,
       },
     });
+  }
+
+  /**
+   * Grants access to the Lambda Function to the given SecurityGroup.
+   * Adds an ingress rule to the given security group and for the given port.
+   * @param securityGroup
+   * @param port
+   */
+  bind(securityGroup: SecurityGroup, port: Port): DatabaseScript {
+    securityGroup.addIngressRule(this.handler.connections.securityGroups[0], port, 'access from Lambda ' + this.handler.node.id);
+    return this;
   }
 
   private ensureLambda(id: string, props: NodejsFunctionProps): NodejsFunction {

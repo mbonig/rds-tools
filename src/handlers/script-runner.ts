@@ -1,4 +1,3 @@
-
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 import { IProvider } from './provider';
 
@@ -25,6 +24,7 @@ export function getProvider(props: {
   };
 
   switch (props.engine) {
+    case 'sqlserver':
     case 'sqlserver-se':
     case 'sqlserver-ex':
     case 'sqlserver-ee':
@@ -57,19 +57,12 @@ export const innerHandler = async (event: any, context: any) => {
   const sm = new AWS.SecretsManager({ region: 'us-east-1' });
   const {
     SECRET_ARN: powerUserSecretArn,
-    DATABASE_HOST: databaseHost,
-    DATABASE_PORT: databasePort,
-    ENGINE: engine,
   } = process.env;
 
-  if (!databaseHost) {
-    throw new Error('Please provide a \'DATABASE_HOST\' environment variable.');
-  }
-  if (!engine) {
-    throw new Error('Could not determine an engine type. Please open an Issue.');
-  }
-
-  const { script, databaseName } = event.ResourceProperties;
+  const {
+    script,
+    databaseName,
+  } = event.ResourceProperties;
 
   console.log('Getting secret...');
   const { SecretString: powerUserSecretString } = await sm.getSecretValue({ SecretId: powerUserSecretArn }).promise();
@@ -80,11 +73,15 @@ export const innerHandler = async (event: any, context: any) => {
   const {
     username,
     password,
+    host,
+    port,
+    engine,
   } = JSON.parse(powerUserSecretString);
 
+
   const provider = getProvider({
-    host: databaseHost,
-    port: databasePort,
+    host,
+    port,
     engine,
     username,
     password,

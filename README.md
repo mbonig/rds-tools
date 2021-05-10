@@ -40,7 +40,8 @@ const databaseInstance = new DatabaseInstance(stack, 'test-database', {
 new DatabaseScript(stack2, 'test', {
   databaseInstance,
   script: 'SELECT 1',
-});
+})
+  .bind(databaseInstance.connections.securityGroups[0]); // bind for security access
 ```
 
 # DatabaseUser
