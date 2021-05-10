@@ -20,7 +20,6 @@ const project = new AwsCdkConstructLibrary({
   authorAddress: 'matthew.bonig@gmail.com',
   cdkVersion: cdkVersion,
   cdkDependenciesAsDeps: false,
-  cdkVersionPinning: true,
   defaultReleaseBranch: 'master',
   jsiiFqn: 'matthewbonig.rdsTools',
   name: '@matthewbonig/rds-tools',
