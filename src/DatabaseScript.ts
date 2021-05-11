@@ -58,11 +58,11 @@ export class DatabaseScript extends Construct {
 
     const vpc = props.vpc || props.databaseInstance?.vpc;
     if (!vpc) {
-      throw new Error('Please provide a VPC to use, either on the `vpc` prop or via the `databaseInstnace` prop.');
+      throw new Error('Please provide a VPC to use, either on the `vpc` prop or via the `databaseInstance` prop.');
     }
 
     // todo: probably need to support BYOL (Bring Your Own Lambda)
-    const handler = this.handler = this.ensureLambda(`${id}-${props.databaseInstance?.node.id}`, {
+    const handler = this.handler = this.ensureLambda(`${id}-${props.databaseInstance?.node.id ?? props.secret?.node.id}`, {
       entry: path.join(__dirname, 'handlers', 'script-runner.ts'),
       handler: 'handler',
       runtime: Runtime.NODEJS_12_X,
