@@ -145,19 +145,7 @@
     },
     {
       "name": "@aws-cdk/aws-ec2",
-      "type": "peer"
-    },
-    {
-      "name": "@aws-cdk/aws-ec2",
       "version": "^1.98.0",
-      "type": "peer"
-    },
-    {
-      "name": "@aws-cdk/aws-events",
-      "type": "peer"
-    },
-    {
-      "name": "@aws-cdk/aws-events-targets",
       "type": "peer"
     },
     {
@@ -168,14 +156,6 @@
     {
       "name": "@aws-cdk/aws-events",
       "version": "^1.98.0",
-      "type": "peer"
-    },
-    {
-      "name": "@aws-cdk/aws-lambda",
-      "type": "peer"
-    },
-    {
-      "name": "@aws-cdk/aws-lambda-nodejs",
       "type": "peer"
     },
     {
@@ -190,19 +170,7 @@
     },
     {
       "name": "@aws-cdk/aws-logs",
-      "type": "peer"
-    },
-    {
-      "name": "@aws-cdk/aws-logs",
       "version": "^1.98.0",
-      "type": "peer"
-    },
-    {
-      "name": "@aws-cdk/aws-rds",
-      "type": "peer"
-    },
-    {
-      "name": "@aws-cdk/aws-rds",
       "type": "peer"
     },
     {
@@ -217,15 +185,7 @@
     },
     {
       "name": "@aws-cdk/aws-secretsmanager",
-      "type": "peer"
-    },
-    {
-      "name": "@aws-cdk/aws-secretsmanager",
       "version": "^1.98.0",
-      "type": "peer"
-    },
-    {
-      "name": "@aws-cdk/core",
       "type": "peer"
     },
     {

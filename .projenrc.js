@@ -13,8 +13,7 @@ let cdkDeps = [
   '@aws-cdk/aws-rds',
   '@aws-cdk/aws-secretsmanager',
 ];
-// putting this in for future use
-const cdkVersion = process.env.CDK_VERSION || '1.98.0';
+const cdkVersion = '1.98.0';
 const project = new AwsCdkConstructLibrary({
   author: 'Matthew Bonig',
   authorAddress: 'matthew.bonig@gmail.com',
@@ -29,7 +28,6 @@ const project = new AwsCdkConstructLibrary({
     'eslint',
     'esbuild',
   ],
-  peerDeps: cdkDeps,
   npmAccess: 'public',
   releaseWorkflow: false,
   projenDuringBuild: false,
