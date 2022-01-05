@@ -1,6 +1,6 @@
-import { Vpc } from '@aws-cdk/aws-ec2';
-import { DatabaseInstance, DatabaseInstanceEngine, PostgresEngineVersion } from '@aws-cdk/aws-rds';
-import { App, Stack } from '@aws-cdk/core';
+import { Vpc } from 'aws-cdk-lib/aws-ec2';
+import { DatabaseInstance, DatabaseInstanceEngine, PostgresEngineVersion } from 'aws-cdk-lib/aws-rds';
+import { App, Stack } from 'aws-cdk-lib/core';
 // @ts-ignore
 import { DatabaseScript } from '.';
 

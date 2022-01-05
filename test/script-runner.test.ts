@@ -3,10 +3,10 @@ import { MySqlProvider } from '../src/handlers/mysql-provider';
 import { PostgresSqlProvider } from '../src/handlers/postgres-provider';
 import { getProvider } from '../src/handlers/script-runner';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const { innerHandler: handler } = require('../src/handlers/script-runner');
 import { awsSdkPromiseResponse } from './__mocks__/aws-sdk';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
+const { innerHandler: handler } = require('../src/handlers/script-runner');
 
 
 describe('handler', () => {

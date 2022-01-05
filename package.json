@@ -5,23 +5,25 @@
     "url": "https://github.com/mbonig/rds-tools.git"
   },
   "scripts": {
-    "clobber": "npx projen clobber",
-    "compile": "npx projen compile",
-    "test:compile": "npx projen test:compile",
-    "test": "npx projen test",
     "build": "npx projen build",
-    "bump": "npx projen bump",
-    "release": "npx projen release",
-    "test:watch": "npx projen test:watch",
-    "test:update": "npx projen test:update",
-    "projen:upgrade": "npx projen projen:upgrade",
-    "watch": "npx projen watch",
-    "package": "npx projen package",
-    "eslint": "npx projen eslint",
+    "clobber": "npx projen clobber",
     "compat": "npx projen compat",
+    "compile": "npx projen compile",
+    "default": "npx projen default",
     "docgen": "npx projen docgen",
-    "projen": "npx projen",
-    "start": "npx projen start"
+    "eslint": "npx projen eslint",
+    "package": "npx projen package",
+    "package-all": "npx projen package-all",
+    "package:js": "npx projen package:js",
+    "post-compile": "npx projen post-compile",
+    "pre-compile": "npx projen pre-compile",
+    "test": "npx projen test",
+    "test:update": "npx projen test:update",
+    "test:watch": "npx projen test:watch",
+    "upgrade": "npx projen upgrade",
+    "upgrade-projen": "npx projen upgrade-projen",
+    "watch": "npx projen watch",
+    "projen": "npx projen"
   },
   "author": {
     "name": "Matthew Bonig",
@@ -29,63 +31,45 @@
     "organization": false
   },
   "devDependencies": {
-    "@aws-cdk/assert": "^1.98.0",
-    "@aws-cdk/aws-ec2": "^1.98.0",
-    "@aws-cdk/aws-events": "^1.98.0",
-    "@aws-cdk/aws-events-targets": "^1.98.0",
-    "@aws-cdk/aws-lambda": "^1.98.0",
-    "@aws-cdk/aws-lambda-nodejs": "^1.98.0",
-    "@aws-cdk/aws-logs": "^1.98.0",
-    "@aws-cdk/aws-rds": "^1.98.0",
-    "@aws-cdk/aws-secretsmanager": "^1.98.0",
-    "@aws-cdk/core": "^1.98.0",
     "@types/jest": "^26.0.20",
-    "@types/node": "^10.17.0",
-    "@typescript-eslint/eslint-plugin": "^4.3.0",
-    "@typescript-eslint/parser": "^4.3.0",
+    "@types/node": "^12",
+    "@typescript-eslint/eslint-plugin": "^5",
+    "@typescript-eslint/parser": "^5",
+    "aws-cdk-lib": "2.0.0",
+    "constructs": "10.0.5",
     "esbuild": "^0.8.43",
-    "eslint": "^7.19.0",
+    "eslint": "^8",
     "eslint-import-resolver-node": "^0.3.4",
     "eslint-import-resolver-typescript": "^2.3.0",
     "eslint-plugin-import": "^2.22.1",
     "jest": "^26.6.3",
-    "jest-junit": "^12",
+    "jest-junit": "^13",
     "jsii": "^1.20.1",
     "jsii-diff": "^1.20.1",
     "jsii-docgen": "^1.8.38",
-    "jsii-pacmak": "^1.20.1",
     "json-schema": "^0.3.0",
-    "projen": "^0.17.44",
-    "standard-version": "^9",
+    "npm-check-updates": "^12",
+    "projen": "^0.50.8",
     "ts-jest": "^26.5.1",
     "typescript": "^3.9.5"
   },
   "peerDependencies": {
-    "@aws-cdk/aws-ec2": "^1.98.0",
-    "@aws-cdk/aws-events": "^1.98.0",
-    "@aws-cdk/aws-events-targets": "^1.98.0",
-    "@aws-cdk/aws-lambda": "^1.98.0",
-    "@aws-cdk/aws-lambda-nodejs": "^1.98.0",
-    "@aws-cdk/aws-logs": "^1.98.0",
-    "@aws-cdk/aws-rds": "^1.98.0",
-    "@aws-cdk/aws-secretsmanager": "^1.98.0",
-    "@aws-cdk/core": "^1.98.0",
-    "constructs": "^3.2.27"
+    "aws-cdk-lib": "^2.0.0",
+    "constructs": "^10.0.5"
   },
-  "bundledDependencies": [],
   "keywords": [
     "cdk"
   ],
   "main": "lib/index.js",
   "license": "Apache-2.0",
-  "version": "0.1.0",
   "publishConfig": {
     "access": "public"
   },
+  "version": "0.0.0",
   "jest": {
     "testMatch": [
-      "**/__tests__/**/*.ts?(x)",
-      "**/?(*.)+(spec|test).ts?(x)"
+      "<rootDir>/src/**/__tests__/**/*.ts?(x)",
+      "<rootDir>/(test|src)/**/?(*.)+(spec|test).ts?(x)"
     ],
     "clearMocks": true,
     "collectCoverage": true,
@@ -117,7 +101,7 @@
     "preset": "ts-jest",
     "globals": {
       "ts-jest": {
-        "tsconfig": "tsconfig.jest.json"
+        "tsconfig": "tsconfig.dev.json"
       }
     }
   },
