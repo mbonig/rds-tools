@@ -1,10 +1,9 @@
-import '@aws-cdk/assert/jest';
-
-import { Port, SecurityGroup, Vpc } from '@aws-cdk/aws-ec2';
-import { CfnFunction } from '@aws-cdk/aws-lambda';
-import { DatabaseInstance, DatabaseInstanceEngine, MysqlEngineVersion } from '@aws-cdk/aws-rds';
-import { Secret } from '@aws-cdk/aws-secretsmanager';
-import { App, Stack } from '@aws-cdk/core';
+import { Template } from 'aws-cdk-lib/assertions';
+import { Port, SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { Code, CodeConfig } from 'aws-cdk-lib/aws-lambda';
+import { DatabaseInstance, DatabaseInstanceEngine, MysqlEngineVersion } from 'aws-cdk-lib/aws-rds';
+import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
+import { App, Stack } from 'aws-cdk-lib/core';
 import { DatabaseScript } from '../src';
 
 describe('DatabaseUser', () => {
@@ -62,6 +61,31 @@ describe('DatabaseUser', () => {
     vpc = new Vpc(stack, 'test-vpc', {});
   });
 
+
+  let fromAssetMock: jest.SpyInstance;
+
+  beforeAll(() => {
+    fromAssetMock = jest.spyOn(Code, 'fromAsset').mockReturnValue({
+      isInline: false,
+      bind: (): CodeConfig => {
+        return {
+          s3Location: {
+            bucketName: 'my-bucket',
+            objectKey: 'my-key',
+          },
+        };
+      },
+      bindToResource: () => {
+        return;
+      },
+    } as any);
+  });
+
+  afterAll(() => {
+    fromAssetMock?.mockRestore();
+  });
+
+
   function createStack(props: any = {}) {
     const testDatabaseInstance = new DatabaseInstance(stack, 'testdb', {
       engine: DatabaseInstanceEngine.mysql({ version: MysqlEngineVersion.VER_8_0_21 }),
@@ -79,7 +103,8 @@ describe('DatabaseUser', () => {
   it('Creates Lambda using db root secret', () => {
     createStack();
 
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    const assert = Template.fromStack(stack);
+    assert.hasResourceProperties('AWS::Lambda::Function', {
       ...commonProps,
       Environment: {
         Variables: {
@@ -96,7 +121,8 @@ describe('DatabaseUser', () => {
     createStack({
       secret: new Secret(stack, 'secret', {}),
     });
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    const assert = Template.fromStack(stack);
+    assert.hasResourceProperties('AWS::Lambda::Function', {
       ...commonProps,
       Environment: {
         Variables: {
@@ -111,7 +137,8 @@ describe('DatabaseUser', () => {
 
   it('Lambda Permissions are correct', () => {
     createStack();
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    const assert = Template.fromStack(stack);
+    assert.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -138,7 +165,8 @@ describe('DatabaseUser', () => {
 
   it('Custom Resource is right', () => {
     createStack();
-    expect(stack).toHaveResource('AWS::CloudFormation::CustomResource', {
+    const assert = Template.fromStack(stack);
+    assert.hasResourceProperties('AWS::CloudFormation::CustomResource', {
       ServiceToken: {
         'Fn::GetAtt': [
           'testconstructtestdbsinglDCE93DA6',
@@ -162,7 +190,8 @@ describe('DatabaseUser', () => {
       secret: testDatabaseInstance.secret,
     }).bind(new SecurityGroup(stack, 'sg12', { vpc }), Port.tcp(1433));
 
-    expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
+    const assert = Template.fromStack(stack);
+    assert.hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
       IpProtocol: 'tcp',
       Description: 'access from Lambda testconstructtestdbsingl',
       FromPort: 1433,
@@ -182,9 +211,4 @@ describe('DatabaseUser', () => {
     });
   });
 
-  it('lambda is specific to the database', () => {
-    createStack();
-    const lambda = stack.node.findAll().find(x => (x as CfnFunction).cfnResourceType === 'AWS::Lambda::Function' && x.node.id === 'Resource');
-    expect(lambda!.node.uniqueId.includes('testdb')).toBeTruthy();
-  });
 });

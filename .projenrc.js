@@ -1,33 +1,20 @@
 const path = require('path');
-const { AwsCdkConstructLibrary } = require('projen');
+const { awscdk } = require('projen');
 
-let cdkDeps = [
-  '@aws-cdk/core',
-  '@aws-cdk/aws-ec2',
-  '@aws-cdk/aws-rds',
-  '@aws-cdk/aws-events',
-  '@aws-cdk/aws-events-targets',
-  '@aws-cdk/aws-lambda',
-  '@aws-cdk/aws-lambda-nodejs',
-  '@aws-cdk/aws-logs',
-  '@aws-cdk/aws-rds',
-  '@aws-cdk/aws-secretsmanager',
-];
-const cdkVersion = '1.98.0';
-const project = new AwsCdkConstructLibrary({
+const cdkVersion = '2.0.0';
+const project = new awscdk.AwsCdkConstructLibrary({
   author: 'Matthew Bonig',
   authorAddress: 'matthew.bonig@gmail.com',
   cdkVersion: cdkVersion,
-  cdkDependenciesAsDeps: false,
-  defaultReleaseBranch: 'master',
+  defaultReleaseBranch: 'main',
   jsiiFqn: 'matthewbonig.rdsTools',
   name: '@matthewbonig/rds-tools',
   repositoryUrl: 'https://github.com/mbonig/rds-tools.git',
-  cdkDependencies: cdkDeps,
   devDeps: [
     'eslint',
     'esbuild',
   ],
+  peerDeps: ['aws-cdk-lib'],
   npmAccess: 'public',
   releaseWorkflow: false,
   projenDuringBuild: false,

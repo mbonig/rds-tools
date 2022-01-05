@@ -1,21 +1,17 @@
 import { execSync, ExecSyncOptions } from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
-import { IVpc, Port, SecurityGroup } from '@aws-cdk/aws-ec2';
-import { slugify } from '@aws-cdk/aws-ec2/lib/util';
-import { Code, IFunction, LayerVersion, Runtime } from '@aws-cdk/aws-lambda';
-import { NodejsFunction, NodejsFunctionProps } from '@aws-cdk/aws-lambda-nodejs';
-import { RetentionDays } from '@aws-cdk/aws-logs';
-import { DatabaseInstance } from '@aws-cdk/aws-rds';
-import { ISecret } from '@aws-cdk/aws-secretsmanager';
-import { Construct, CustomResource, Duration, Stack } from '@aws-cdk/core';
+import { aws_ec2 as ec2, aws_lambda, aws_lambda_nodejs, aws_logs, aws_rds, aws_secretsmanager } from 'aws-cdk-lib';
+import { slugify } from 'aws-cdk-lib/aws-ec2/lib/util';
+import { CustomResource, Duration, Stack } from 'aws-cdk-lib/core';
+import { Construct } from 'constructs';
 
 export interface DatabaseScriptProps {
 
   /**
    * The VPC for the Lambda Function to attach to. If one is not provide, it's assumed from the database instance.
    */
-  readonly vpc?: IVpc;
+  readonly vpc?: ec2.IVpc;
 
   /**
    * An optional databaseName. If none is provided then it will be the default for the rds instance, as defined by the AWS docs.
@@ -30,14 +26,14 @@ export interface DatabaseScriptProps {
   /**
    * The database instance to run the script against
    */
-  readonly databaseInstance?: DatabaseInstance;
+  readonly databaseInstance?: aws_rds.DatabaseInstance;
 
   /**
    * An optional secret that provides credentials for the database. Must have fields 'username' and 'password'
    *
    * @default the root secret from the database instance
    */
-  readonly secret?: ISecret;
+  readonly secret?: aws_secretsmanager.ISecret;
 
   /**
    * The script to execute.
@@ -46,7 +42,7 @@ export interface DatabaseScriptProps {
 }
 
 export class DatabaseScript extends Construct {
-  private handler: IFunction;
+  private handler: aws_lambda.IFunction;
 
   constructor(scope: Construct, id: string, props: DatabaseScriptProps) {
     super(scope, id);
@@ -65,7 +61,7 @@ export class DatabaseScript extends Construct {
     const handler = this.handler = this.ensureLambda(`${id}-${props.databaseInstance?.node.id ?? props.secret?.node.id}`, {
       entry: path.join(__dirname, 'handlers', 'script-runner.ts'),
       handler: 'handler',
-      runtime: Runtime.NODEJS_12_X,
+      runtime: aws_lambda.Runtime.NODEJS_12_X,
       vpc: vpc,
       environment: {
         SECRET_ARN: secret.secretArn,
@@ -74,16 +70,16 @@ export class DatabaseScript extends Construct {
         externalModules: ['aws-sdk', 'mssql', 'promise-mysql', 'pg'],
       },
       timeout: Duration.seconds(15), // TODO: should be overridable
-      logRetention: RetentionDays.ONE_DAY,
+      logRetention: aws_logs.RetentionDays.ONE_DAY,
     });
 
 
     const assetPath = path.join(__dirname, 'layer');
 
-    handler.addLayers(new LayerVersion(this, 'deps-layer', {
-      code: Code.fromAsset(assetPath, {
+    handler.addLayers(new aws_lambda.LayerVersion(this, 'deps-layer', {
+      code: aws_lambda.Code.fromAsset(assetPath, {
         bundling: {
-          image: Runtime.NODEJS_12_X.bundlingDockerImage,
+          image: aws_lambda.Runtime.NODEJS_12_X.bundlingImage,
           command: [
             'bash', '-c',
             'echo npm i && cp -r /asset-input/* /asset-output',
@@ -136,20 +132,20 @@ export class DatabaseScript extends Construct {
    * @param securityGroup
    * @param port
    */
-  bind(securityGroup: SecurityGroup, port: Port): DatabaseScript {
+  bind(securityGroup: ec2.SecurityGroup, port: ec2.Port): DatabaseScript {
     securityGroup.addIngressRule(this.handler.connections.securityGroups[0], port, 'access from Lambda ' + this.handler.node.id);
     return this;
   }
 
-  private ensureLambda(id: string, props: NodejsFunctionProps): NodejsFunction {
+  private ensureLambda(id: string, props: aws_lambda_nodejs.NodejsFunctionProps): aws_lambda_nodejs.NodejsFunction {
     // TODO: Copy-pasted from CDK codebase until
     //       https://github.com/aws/aws-cdk/issues/6261 is fixed and we can
     //       use a proper SingletonFunction
     const constructName = slugify(id) + 'singl';
     const existing = Stack.of(this).node.tryFindChild(constructName);
     if (existing) {
-      return existing as NodejsFunction;
+      return existing as aws_lambda_nodejs.NodejsFunction;
     }
-    return new NodejsFunction(Stack.of(this), constructName, props);
+    return new aws_lambda_nodejs.NodejsFunction(Stack.of(this), constructName, props);
   }
 }
