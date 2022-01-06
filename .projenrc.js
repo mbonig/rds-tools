@@ -16,8 +16,6 @@ const project = new awscdk.AwsCdkConstructLibrary({
   ],
   peerDeps: ['aws-cdk-lib'],
   npmAccess: 'public',
-  releaseWorkflow: false,
-  projenDuringBuild: false,
 });
 
 project.addFields({

@@ -6,6 +6,7 @@
   },
   "scripts": {
     "build": "npx projen build",
+    "bump": "npx projen bump",
     "clobber": "npx projen clobber",
     "compat": "npx projen compat",
     "compile": "npx projen compile",
@@ -17,9 +18,11 @@
     "package:js": "npx projen package:js",
     "post-compile": "npx projen post-compile",
     "pre-compile": "npx projen pre-compile",
+    "release": "npx projen release",
     "test": "npx projen test",
     "test:update": "npx projen test:update",
     "test:watch": "npx projen test:watch",
+    "unbump": "npx projen unbump",
     "upgrade": "npx projen upgrade",
     "upgrade-projen": "npx projen upgrade-projen",
     "watch": "npx projen watch",
@@ -50,6 +53,7 @@
     "json-schema": "^0.3.0",
     "npm-check-updates": "^12",
     "projen": "^0.50.8",
+    "standard-version": "^9",
     "ts-jest": "^26.5.1",
     "typescript": "^3.9.5"
   },
