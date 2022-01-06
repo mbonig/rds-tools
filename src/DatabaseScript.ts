@@ -62,6 +62,7 @@ export class DatabaseScript extends Construct implements IConnectable {
 
   private handler: aws_lambda.IFunction;
   private adhocHandler?: aws_lambda.IFunction;
+  private providerLayer: aws_lambda.LayerVersion;
 
   constructor(scope: Construct, id: string, props: DatabaseScriptProps) {
     super(scope, id);
@@ -76,7 +77,46 @@ export class DatabaseScript extends Construct implements IConnectable {
       throw new Error('Please provide a VPC to use, either on the `vpc` prop or via the `databaseInstance` prop.');
     }
 
-    // todo: probably need to support BYOL (Bring Your Own Lambda)
+    const assetPath = path.join(__dirname, 'layer');
+    this.providerLayer = new aws_lambda.LayerVersion(this, `${id}-deps-layer`, {
+      code: aws_lambda.Code.fromAsset(assetPath, {
+        bundling: {
+          image: aws_lambda.Runtime.NODEJS_12_X.bundlingImage,
+          command: [
+            'bash', '-c',
+            'echo npm i && cp -r /asset-input/* /asset-output',
+          ],
+          environment: {
+            npm_config_cache: 'npm-cache',
+          },
+          user: 'root',
+          workingDirectory: '/asset-input/nodejs',
+          local: {
+            tryBundle(outputDir: string): boolean {
+              console.log('Going to try local bundling...');
+              if (os.platform() !== 'linux') {
+                console.warn('When using local bundling on another OS besides linux, you may end up building dependencies that will not run on AWS Lambda. Please build on a linux OS if you run into issues.');
+              }
+              const execOptions: ExecSyncOptions = { stdio: ['ignore', process.stderr, 'inherit'] };
+              try {
+                const layerDir = path.join(__dirname, 'layer');
+                execSync('npm install', {
+                  ...execOptions,
+                  cwd: path.join(layerDir, 'nodejs'),
+                });
+                execSync(`mkdir -p ${outputDir}/nodejs/node_modules`, { ...execOptions });
+                execSync(`cp -r ${layerDir}/nodejs/node_modules/* ${outputDir}/nodejs/node_modules`, { ...execOptions });
+
+              } catch {
+                return false;
+              }
+              return true;
+            },
+          },
+        },
+      }),
+    });
+
     const handler = this.handler = this.createLambda(id, props, vpc, secret);
     new CustomResource(this, `${id}-customResource`, {
       serviceToken: handler.functionArn,
@@ -135,46 +175,7 @@ export class DatabaseScript extends Construct implements IConnectable {
       logRetention: aws_logs.RetentionDays.ONE_DAY,
     });
 
-    const assetPath = path.join(__dirname, 'layer');
-
-    handlerFunction.addLayers(new aws_lambda.LayerVersion(this, `${id}-deps-layer`, {
-      code: aws_lambda.Code.fromAsset(assetPath, {
-        bundling: {
-          image: aws_lambda.Runtime.NODEJS_12_X.bundlingImage,
-          command: [
-            'bash', '-c',
-            'echo npm i && cp -r /asset-input/* /asset-output',
-          ],
-          environment: {
-            npm_config_cache: 'npm-cache',
-          },
-          user: 'root',
-          workingDirectory: '/asset-input/nodejs',
-          local: {
-            tryBundle(outputDir: string): boolean {
-              console.log('Going to try local bundling...');
-              if (os.platform() !== 'linux') {
-                console.warn('When using local bundling on another OS besides linux, you may end up building dependencies that will not run on AWS Lambda. Please build on a linux OS if you run into issues.');
-              }
-              const execOptions: ExecSyncOptions = { stdio: ['ignore', process.stderr, 'inherit'] };
-              try {
-                const layerDir = path.join(__dirname, 'layer');
-                execSync('npm install', {
-                  ...execOptions,
-                  cwd: path.join(layerDir, 'nodejs'),
-                });
-                execSync(`mkdir -p ${outputDir}/nodejs/node_modules`, { ...execOptions });
-                execSync(`cp -r ${layerDir}/nodejs/node_modules/* ${outputDir}/nodejs/node_modules`, { ...execOptions });
-
-              } catch {
-                return false;
-              }
-              return true;
-            },
-          },
-        },
-      }),
-    }));
+    handlerFunction.addLayers(this.providerLayer);
 
     secret.grantRead(handlerFunction);
     return handlerFunction;
