@@ -1,11 +1,10 @@
 const path = require('path');
 const { awscdk } = require('projen');
 
-const cdkVersion = '2.0.0';
 const project = new awscdk.AwsCdkConstructLibrary({
   author: 'Matthew Bonig',
   authorAddress: 'matthew.bonig@gmail.com',
-  cdkVersion: cdkVersion,
+  cdkVersion: '2.1.0',
   defaultReleaseBranch: 'main',
   jsiiFqn: 'matthewbonig.rdsTools',
   name: '@matthewbonig/rds-tools',
@@ -14,7 +13,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
     'eslint',
     'esbuild',
   ],
-  peerDeps: ['aws-cdk-lib'],
+  // peerDeps: ['aws-cdk-lib', 'constructs@10.0.26'],
   npmAccess: 'public',
 });
 
