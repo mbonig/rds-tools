@@ -1,9 +1,17 @@
 import { execSync, ExecSyncOptions } from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
-import { aws_ec2 as ec2, aws_lambda, aws_lambda_nodejs, aws_logs, aws_rds, aws_secretsmanager } from 'aws-cdk-lib';
-import { slugify } from 'aws-cdk-lib/aws-ec2/lib/util';
-import { CustomResource, Duration, Stack } from 'aws-cdk-lib/core';
+import {
+  aws_ec2 as ec2,
+  aws_lambda,
+  aws_lambda_nodejs,
+  aws_logs,
+  aws_rds,
+  aws_secretsmanager,
+  CustomResource,
+  Duration,
+  Stack,
+} from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 export interface DatabaseScriptProps {
@@ -137,11 +145,15 @@ export class DatabaseScript extends Construct {
     return this;
   }
 
+  slugify(x: string): string {
+    return x.replace(/[^a-zA-Z0-9]/g, '');
+  }
+
   private ensureLambda(id: string, props: aws_lambda_nodejs.NodejsFunctionProps): aws_lambda_nodejs.NodejsFunction {
     // TODO: Copy-pasted from CDK codebase until
     //       https://github.com/aws/aws-cdk/issues/6261 is fixed and we can
     //       use a proper SingletonFunction
-    const constructName = slugify(id) + 'singl';
+    const constructName = this.slugify(id) + 'singl';
     const existing = Stack.of(this).node.tryFindChild(constructName);
     if (existing) {
       return existing as aws_lambda_nodejs.NodejsFunction;

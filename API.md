@@ -60,6 +60,19 @@ bind(securityGroup: SecurityGroup, port: Port): DatabaseScript
 __Returns__:
 * <code>[DatabaseScript](#matthewbonig-rds-tools-databasescript)</code>
 
+#### slugify(x) <a id="matthewbonig-rds-tools-databasescript-slugify"></a>
+
+
+
+```ts
+slugify(x: string): string
+```
+
+* **x** (<code>string</code>)  *No description*
+
+__Returns__:
+* <code>string</code>
+
 
 
 ## struct DatabaseScriptProps  <a id="matthewbonig-rds-tools-databasescriptprops"></a>
