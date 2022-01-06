@@ -19,7 +19,7 @@ Name|Description
 
 
 
-__Implements__: [IConstruct](#constructs-iconstruct), [IDependable](#constructs-idependable)
+__Implements__: [IConstruct](#constructs-iconstruct), [IDependable](#constructs-idependable), [aws_ec2.IConnectable](#aws-cdk-lib-aws-ec2-iconnectable)
 __Extends__: [Construct](#constructs-construct)
 
 ### Initializer
@@ -41,10 +41,18 @@ new DatabaseScript(scope: Construct, id: string, props: DatabaseScriptProps)
   * **vpc** (<code>[aws_ec2.IVpc](#aws-cdk-lib-aws-ec2-ivpc)</code>)  The VPC for the Lambda Function to attach to. __*Optional*__
 
 
+
+### Properties
+
+
+Name | Type | Description 
+-----|------|-------------
+**connections** | <code>[aws_ec2.Connections](#aws-cdk-lib-aws-ec2-connections)</code> | The network connections associated with this resource.
+
 ### Methods
 
 
-#### bind(securityGroup, port) <a id="matthewbonig-rds-tools-databasescript-bind"></a>
+#### bind(securityGroup, port)⚠️ <a id="matthewbonig-rds-tools-databasescript-bind"></a>
 
 Grants access to the Lambda Function to the given SecurityGroup.
 

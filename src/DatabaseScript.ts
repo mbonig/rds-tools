@@ -12,6 +12,7 @@ import {
   Duration,
   Stack,
 } from 'aws-cdk-lib';
+import { Connections, IConnectable } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 
 export interface DatabaseScriptProps {
@@ -49,7 +50,8 @@ export interface DatabaseScriptProps {
   readonly script: string;
 }
 
-export class DatabaseScript extends Construct {
+export class DatabaseScript extends Construct implements IConnectable {
+
   private handler: aws_lambda.IFunction;
 
   constructor(scope: Construct, id: string, props: DatabaseScriptProps) {
@@ -80,7 +82,6 @@ export class DatabaseScript extends Construct {
       timeout: Duration.seconds(15), // TODO: should be overridable
       logRetention: aws_logs.RetentionDays.ONE_DAY,
     });
-
 
     const assetPath = path.join(__dirname, 'layer');
 
@@ -134,9 +135,15 @@ export class DatabaseScript extends Construct {
     });
   }
 
+  get connections(): Connections {
+    return this.handler.connections;
+  }
+
+
   /**
    * Grants access to the Lambda Function to the given SecurityGroup.
    * Adds an ingress rule to the given security group and for the given port.
+   * @deprecated Do not use, pass this construct as an IConnectable
    * @param securityGroup
    * @param port
    */
