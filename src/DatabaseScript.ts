@@ -12,7 +12,8 @@ import {
   Duration,
   Stack,
 } from 'aws-cdk-lib';
-import { Connections, IConnectable } from 'aws-cdk-lib/aws-ec2';
+import { Connections, IConnectable, IVpc } from 'aws-cdk-lib/aws-ec2';
+import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
 import { Construct } from 'constructs';
 
 export interface DatabaseScriptProps {
@@ -48,11 +49,19 @@ export interface DatabaseScriptProps {
    * The script to execute.
    */
   readonly script: string;
+
+  /**
+   * Deploy a second Lambda function that allows for adhoc sql against the database?
+   *
+   * @default false
+   */
+  readonly enableAdhoc?: boolean;
 }
 
 export class DatabaseScript extends Construct implements IConnectable {
 
   private handler: aws_lambda.IFunction;
+  private adhocHandler?: aws_lambda.IFunction;
 
   constructor(scope: Construct, id: string, props: DatabaseScriptProps) {
     super(scope, id);
@@ -68,9 +77,52 @@ export class DatabaseScript extends Construct implements IConnectable {
     }
 
     // todo: probably need to support BYOL (Bring Your Own Lambda)
-    const handler = this.handler = this.ensureLambda(`${id}-${props.databaseInstance?.node.id ?? props.secret?.node.id}`, {
+    const handler = this.handler = this.createLambda(id, props, vpc, secret);
+    new CustomResource(this, `${id}-customResource`, {
+      serviceToken: handler.functionArn,
+      properties: {
+        script: props.script,
+        databaseName: props.databaseName,
+      },
+    });
+
+    if (props.enableAdhoc) {
+      this.adhocHandler = this.createLambda(`${id}-adhoc`, props, vpc, secret, 'adhocHandler');
+    }
+
+  }
+
+  get connections(): Connections {
+    return this.handler.connections;
+  }
+
+  get adhocConnections(): Connections {
+    if (!this.adhocHandler) {
+      throw new Error('Please enable the adhoc handler using the enableAdhoc prop.');
+    }
+    return this.adhocHandler?.connections;
+  }
+
+  /**
+   * Grants access to the Lambda Function to the given SecurityGroup.
+   * Adds an ingress rule to the given security group and for the given port.
+   * @deprecated Do not use, pass this construct as an IConnectable
+   * @param securityGroup
+   * @param port
+   */
+  bind(securityGroup: ec2.SecurityGroup, port: ec2.Port): DatabaseScript {
+    securityGroup.addIngressRule(this.handler.connections.securityGroups[0], port, 'access from Lambda ' + this.handler.node.id);
+    return this;
+  }
+
+  slugify(x: string): string {
+    return x.replace(/[^a-zA-Z0-9]/g, '');
+  }
+
+  private createLambda(id: string, props: DatabaseScriptProps, vpc: IVpc, secret: ISecret, handler?: string) {
+    const handlerFunction = this.ensureLambda(`${id}-${props.databaseInstance?.node.id ?? props.secret?.node.id}`, {
       entry: path.join(__dirname, 'handlers', 'script-runner.ts'),
-      handler: 'handler',
+      handler: handler ?? 'handler',
       runtime: aws_lambda.Runtime.NODEJS_12_X,
       vpc: vpc,
       environment: {
@@ -85,7 +137,7 @@ export class DatabaseScript extends Construct implements IConnectable {
 
     const assetPath = path.join(__dirname, 'layer');
 
-    handler.addLayers(new aws_lambda.LayerVersion(this, 'deps-layer', {
+    handlerFunction.addLayers(new aws_lambda.LayerVersion(this, `${id}-deps-layer`, {
       code: aws_lambda.Code.fromAsset(assetPath, {
         bundling: {
           image: aws_lambda.Runtime.NODEJS_12_X.bundlingImage,
@@ -124,36 +176,8 @@ export class DatabaseScript extends Construct implements IConnectable {
       }),
     }));
 
-    secret.grantRead(handler);
-
-    new CustomResource(this, `${id}-customResource`, {
-      serviceToken: handler.functionArn,
-      properties: {
-        script: props.script,
-        databaseName: props.databaseName,
-      },
-    });
-  }
-
-  get connections(): Connections {
-    return this.handler.connections;
-  }
-
-
-  /**
-   * Grants access to the Lambda Function to the given SecurityGroup.
-   * Adds an ingress rule to the given security group and for the given port.
-   * @deprecated Do not use, pass this construct as an IConnectable
-   * @param securityGroup
-   * @param port
-   */
-  bind(securityGroup: ec2.SecurityGroup, port: ec2.Port): DatabaseScript {
-    securityGroup.addIngressRule(this.handler.connections.securityGroups[0], port, 'access from Lambda ' + this.handler.node.id);
-    return this;
-  }
-
-  slugify(x: string): string {
-    return x.replace(/[^a-zA-Z0-9]/g, '');
+    secret.grantRead(handlerFunction);
+    return handlerFunction;
   }
 
   private ensureLambda(id: string, props: aws_lambda_nodejs.NodejsFunctionProps): aws_lambda_nodejs.NodejsFunction {

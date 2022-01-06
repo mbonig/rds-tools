@@ -37,6 +37,7 @@ new DatabaseScript(scope: Construct, id: string, props: DatabaseScriptProps)
   * **script** (<code>string</code>)  The script to execute. 
   * **databaseInstance** (<code>[aws_rds.DatabaseInstance](#aws-cdk-lib-aws-rds-databaseinstance)</code>)  The database instance to run the script against. __*Optional*__
   * **databaseName** (<code>string</code>)  An optional databaseName. __*Optional*__
+  * **enableAdhoc** (<code>boolean</code>)  Deploy a second Lambda function that allows for adhoc sql against the database? __*Default*__: false
   * **secret** (<code>[aws_secretsmanager.ISecret](#aws-cdk-lib-aws-secretsmanager-isecret)</code>)  An optional secret that provides credentials for the database. __*Default*__: the root secret from the database instance
   * **vpc** (<code>[aws_ec2.IVpc](#aws-cdk-lib-aws-ec2-ivpc)</code>)  The VPC for the Lambda Function to attach to. __*Optional*__
 
@@ -47,6 +48,7 @@ new DatabaseScript(scope: Construct, id: string, props: DatabaseScriptProps)
 
 Name | Type | Description 
 -----|------|-------------
+**adhocConnections** | <code>[aws_ec2.Connections](#aws-cdk-lib-aws-ec2-connections)</code> | <span></span>
 **connections** | <code>[aws_ec2.Connections](#aws-cdk-lib-aws-ec2-connections)</code> | The network connections associated with this resource.
 
 ### Methods
@@ -95,6 +97,7 @@ Name | Type | Description
 **script** | <code>string</code> | The script to execute.
 **databaseInstance**? | <code>[aws_rds.DatabaseInstance](#aws-cdk-lib-aws-rds-databaseinstance)</code> | The database instance to run the script against.<br/>__*Optional*__
 **databaseName**? | <code>string</code> | An optional databaseName.<br/>__*Optional*__
+**enableAdhoc**? | <code>boolean</code> | Deploy a second Lambda function that allows for adhoc sql against the database?<br/>__*Default*__: false
 **secret**? | <code>[aws_secretsmanager.ISecret](#aws-cdk-lib-aws-secretsmanager-isecret)</code> | An optional secret that provides credentials for the database.<br/>__*Default*__: the root secret from the database instance
 **vpc**? | <code>[aws_ec2.IVpc](#aws-cdk-lib-aws-ec2-ivpc)</code> | The VPC for the Lambda Function to attach to.<br/>__*Optional*__
 

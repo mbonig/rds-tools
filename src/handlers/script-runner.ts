@@ -46,23 +46,12 @@ export function getProvider(props: {
   }
 }
 
-export const innerHandler = async (event: any, context: any) => {
-  console.log('event: ', JSON.stringify(event, null, 2));
-
-  if (event.RequestType === 'Delete') {
-    await response.send(event, context, 'SUCCESS', null, event.PhysicalResourceId);
-    return;
-  }
+export const innerHandler = async ({ script, databaseName }: { script: string; databaseName: string }) => {
 
   const sm = new AWS.SecretsManager({ region: 'us-east-1' });
   const {
     SECRET_ARN: powerUserSecretArn,
   } = process.env;
-
-  const {
-    script,
-    databaseName,
-  } = event.ResourceProperties;
 
   console.log('Getting secret...');
   const { SecretString: powerUserSecretString } = await sm.getSecretValue({ SecretId: powerUserSecretArn }).promise();
@@ -90,9 +79,24 @@ export const innerHandler = async (event: any, context: any) => {
   return provider.query(script);
 
 };
+/**
+ * Handler for Custom Resources
+ *
+ * @param event
+ * @param context
+ */
 export const handler = async (event: any, context: any) => {
+  console.log('event: ', JSON.stringify(event, null, 2));
   try {
-    const results = await innerHandler(event, context);
+    if (event.RequestType === 'Delete') {
+      await response.send(event, context, 'SUCCESS', null, event.PhysicalResourceId);
+      return;
+    }
+    const {
+      script,
+      databaseName,
+    } = event.ResourceProperties;
+    const results = await innerHandler({ script, databaseName });
     await response.send(event, context, response.SUCCESS, null, null);
     return results;
   } catch (error) {
@@ -100,4 +104,21 @@ export const handler = async (event: any, context: any) => {
     console.log(error);
     await response.send(event, context, response.FAILED, { err: error });
   }
+};
+
+/**
+ * Handler for direct execution
+ *
+ * @param event {script: string, databaseName: string}
+ * @example {script: 'SELECT 1', databaseName: 'mydatabase'}
+ */
+export const adhocHandler = async (event: any) => {
+  console.log('event:', JSON.stringify(event, null, 2));
+  if (!event.script) {
+    throw new Error('Please provide a script to run. e.g. `SELECT 1`');
+  }
+  if (!event.databaseName) {
+    throw new Error('Please provide a database name. e.g. `mydatabase`');
+  }
+  await innerHandler(event);
 };

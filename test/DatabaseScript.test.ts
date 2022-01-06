@@ -61,7 +61,6 @@ describe('DatabaseUser', () => {
     vpc = new Vpc(stack, 'test-vpc', {});
   });
 
-
   let fromAssetMock: jest.SpyInstance;
 
   beforeAll(() => {
@@ -174,6 +173,23 @@ describe('DatabaseUser', () => {
         ],
       },
       script: 'SELECT * FROM table',
+    });
+  });
+
+  it('Creates adhoc lambda', ()=>{
+    createStack({ enableAdhoc: true });
+
+    const assert = Template.fromStack(stack);
+    assert.hasResourceProperties('AWS::Lambda::Function', {
+      ...commonProps,
+      Environment: {
+        Variables: {
+          ...variables,
+          SECRET_ARN: {
+            Ref: 'testdbSecretAttachmentA0E468D9',
+          },
+        },
+      },
     });
   });
 
