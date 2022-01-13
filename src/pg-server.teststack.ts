@@ -1,12 +1,11 @@
+import { App, Stack } from 'aws-cdk-lib';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import { DatabaseInstance, DatabaseInstanceEngine, PostgresEngineVersion } from 'aws-cdk-lib/aws-rds';
-import { App, Stack } from 'aws-cdk-lib/core';
-// @ts-ignore
 import { DatabaseScript } from '.';
 
 const app = new App();
 let baseId = 'pg-server-test-stack';
-const stack = new Stack(app, baseId +'-database', {
+const stack = new Stack(app, baseId + '-database', {
   env: {
     region: 'us-east-1',
     account: '581514672367',
@@ -15,7 +14,7 @@ const stack = new Stack(app, baseId +'-database', {
 const vpc = new Vpc(stack, 'test-vpc', {
   maxAzs: 2,
 });
-// @ts-ignore
+
 const databaseInstance = new DatabaseInstance(stack, 'test-database', {
   engine: DatabaseInstanceEngine.postgres({ version: PostgresEngineVersion.VER_12_4 }),
   vpc: vpc,

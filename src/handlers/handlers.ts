@@ -6,15 +6,14 @@ const AWS = require('aws-sdk');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const response = require('./cfn-response');
 
-
-export function getProvider(props: {
+export const getProvider = (props: {
   username: string;
   password: string;
   host: string;
   databaseName?: string;
   engine: string;
   port?: string;
-}): IProvider {
+}): IProvider => {
   const commonProps = {
     host: props.host,
     port: props.port,
@@ -44,7 +43,7 @@ export function getProvider(props: {
       throw new Error('Cannot determine the provider to use. Please submit an Issue.');
 
   }
-}
+};
 
 export const innerHandler = async ({ script, databaseName }: { script: string; databaseName: string }) => {
 
@@ -118,7 +117,7 @@ export const adhocHandler = async (event: any) => {
     throw new Error('Please provide a script to run. e.g. `SELECT 1`');
   }
   if (!event.databaseName) {
-    throw new Error('Please provide a database name. e.g. `mydatabase`');
+    throw new Error('Please provide a databaseName. e.g. `mydatabase`');
   }
   await innerHandler(event);
 };

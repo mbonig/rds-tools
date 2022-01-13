@@ -14,7 +14,7 @@ describe('DatabaseUser', () => {
   // standard responses
   const role = {
     'Fn::GetAtt': [
-      'testconstructtestdbsinglServiceRole6B7C76BD',
+      'testdbcrsinglServiceRoleD215FB7C',
       'Arn',
     ],
   };
@@ -30,7 +30,7 @@ describe('DatabaseUser', () => {
     SecurityGroupIds: [
       {
         'Fn::GetAtt': [
-          'testconstructtestdbsinglSecurityGroup59C76A1D',
+          'testdbcrsinglSecurityGroup42F73B8E',
           'GroupId',
         ],
       },
@@ -153,10 +153,10 @@ describe('DatabaseUser', () => {
         ],
         Version: '2012-10-17',
       },
-      PolicyName: 'testconstructtestdbsinglServiceRoleDefaultPolicyFC217E5C',
+      PolicyName: 'testdbcrsinglServiceRoleDefaultPolicy249C0A03',
       Roles: [
         {
-          Ref: 'testconstructtestdbsinglServiceRole6B7C76BD',
+          Ref: 'testdbcrsinglServiceRoleD215FB7C',
         },
       ],
     });
@@ -168,7 +168,7 @@ describe('DatabaseUser', () => {
     assert.hasResourceProperties('AWS::CloudFormation::CustomResource', {
       ServiceToken: {
         'Fn::GetAtt': [
-          'testconstructtestdbsinglDCE93DA6',
+          'testdbcrsinglB417086D',
           'Arn',
         ],
       },
@@ -209,7 +209,7 @@ describe('DatabaseUser', () => {
     const assert = Template.fromStack(stack);
     assert.hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
       IpProtocol: 'tcp',
-      Description: 'access from Lambda testconstructtestdbsingl',
+      Description: 'access from Lambda testdbcrsingl',
       FromPort: 1433,
       GroupId: {
         'Fn::GetAtt': [
@@ -219,7 +219,7 @@ describe('DatabaseUser', () => {
       },
       SourceSecurityGroupId: {
         'Fn::GetAtt': [
-          'testconstructtestdbsinglSecurityGroup59C76A1D',
+          'testdbcrsinglSecurityGroup42F73B8E',
           'GroupId',
         ],
       },

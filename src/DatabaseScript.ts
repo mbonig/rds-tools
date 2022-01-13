@@ -117,7 +117,7 @@ export class DatabaseScript extends Construct implements IConnectable {
       }),
     });
 
-    const handler = this.handler = this.createLambda(id, props, vpc, secret);
+    const handler = this.handler = this.createLambda('cr', props, vpc, secret);
     new CustomResource(this, `${id}-customResource`, {
       serviceToken: handler.functionArn,
       properties: {
@@ -127,7 +127,7 @@ export class DatabaseScript extends Construct implements IConnectable {
     });
 
     if (props.enableAdhoc) {
-      this.adhocHandler = this.createLambda(`${id}-adhoc`, props, vpc, secret, 'adhocHandler');
+      this.adhocHandler = this.createLambda('adhoc', props, vpc, secret, 'adhocHandler');
     }
 
   }
@@ -160,8 +160,9 @@ export class DatabaseScript extends Construct implements IConnectable {
   }
 
   private createLambda(id: string, props: DatabaseScriptProps, vpc: IVpc, secret: ISecret, handler?: string) {
-    const handlerFunction = this.ensureLambda(`${id}-${props.databaseInstance?.node.id ?? props.secret?.node.id}`, {
-      entry: path.join(__dirname, 'handlers', 'script-runner.ts'),
+    const handlerFunction = this.ensureLambda(`${props.databaseInstance?.node.id ?? props.secret?.node.id}-${id}`, {
+      entry: path.join(__dirname, 'handlers', 'handlers.ts'),
+      depsLockFilePath: path.join(__dirname, 'handlers', 'package-lock.json'),
       handler: handler ?? 'handler',
       runtime: aws_lambda.Runtime.NODEJS_12_X,
       vpc: vpc,
