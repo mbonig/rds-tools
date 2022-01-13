@@ -1,4 +1,4 @@
-import { getProvider } from '../src/handlers/handlers';
+import { getProvider } from '../src/handlers/index';
 import { MsSqlProvider } from '../src/handlers/mssql-provider';
 import { MySqlProvider } from '../src/handlers/mysql-provider';
 import { PostgresSqlProvider } from '../src/handlers/postgres-provider';
