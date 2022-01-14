@@ -50,6 +50,7 @@ Name | Type | Description
 -----|------|-------------
 **adhocConnections** | <code>[aws_ec2.Connections](#aws-cdk-lib-aws-ec2-connections)</code> | <span></span>
 **connections** | <code>[aws_ec2.Connections](#aws-cdk-lib-aws-ec2-connections)</code> | The network connections associated with this resource.
+**adhocHandler**? | <code>[aws_lambda.IFunction](#aws-cdk-lib-aws-lambda-ifunction)</code> | The underlying Lambda handler function for making adhoc commands against the database.<br/>__*Optional*__
 
 ### Methods
 
