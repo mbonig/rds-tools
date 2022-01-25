@@ -119,6 +119,6 @@ export const adhocHandler = async (event: any) => {
   if (!event.databaseName) {
     throw new Error('Please provide a databaseName. e.g. `mydatabase`');
   }
-  const results: any = innerHandler(event);
+  const results: any = await innerHandler(event);
   return results.rows;
 };
