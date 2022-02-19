@@ -1,5 +1,5 @@
 const path = require('path');
-const {awscdk} = require('projen');
+const { awscdk } = require('projen');
 
 const project = new awscdk.AwsCdkConstructLibrary({
   author: 'Matthew Bonig',
@@ -16,8 +16,8 @@ const project = new awscdk.AwsCdkConstructLibrary({
   ],
   npmAccess: 'public',
   keywords: [
-    'aws', 'awscdk', 'RDS', 'SQL'
-  ]
+    'aws', 'awscdk', 'RDS', 'SQL',
+  ],
 });
 
 project.addFields({
