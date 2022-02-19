@@ -1,5 +1,6 @@
 {
   "name": "@matthewbonig/rds-tools",
+  "description": "A construct for working with RDS SQL servers",
   "repository": {
     "type": "git",
     "url": "https://github.com/mbonig/rds-tools.git"
@@ -38,7 +39,7 @@
     "@types/node": "^12",
     "@typescript-eslint/eslint-plugin": "^5",
     "@typescript-eslint/parser": "^5",
-    "aws-cdk-lib": "2.1.0",
+    "aws-cdk-lib": "2.4.0",
     "constructs": "10.0.5",
     "esbuild": "^0.8.43",
     "eslint": "^8",
@@ -58,10 +59,14 @@
     "typescript": "^3.9.5"
   },
   "peerDependencies": {
-    "aws-cdk-lib": "^2.1.0",
+    "aws-cdk-lib": "^2.4.0",
     "constructs": "^10.0.5"
   },
   "keywords": [
+    "RDS",
+    "SQL",
+    "aws",
+    "awscdk",
     "cdk"
   ],
   "main": "lib/index.js",

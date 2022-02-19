@@ -1,10 +1,11 @@
 const path = require('path');
-const { awscdk } = require('projen');
+const {awscdk} = require('projen');
 
 const project = new awscdk.AwsCdkConstructLibrary({
   author: 'Matthew Bonig',
   authorAddress: 'matthew.bonig@gmail.com',
-  cdkVersion: '2.1.0',
+  description: 'A construct for working with RDS SQL servers',
+  cdkVersion: '2.4.0',
   defaultReleaseBranch: 'main',
   jsiiFqn: 'matthewbonig.rdsTools',
   name: '@matthewbonig/rds-tools',
@@ -13,8 +14,10 @@ const project = new awscdk.AwsCdkConstructLibrary({
     'eslint',
     'esbuild',
   ],
-  // peerDeps: ['aws-cdk-lib', 'constructs@10.0.26'],
   npmAccess: 'public',
+  keywords: [
+    'aws', 'awscdk', 'RDS', 'SQL'
+  ]
 });
 
 project.addFields({
