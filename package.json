@@ -24,8 +24,6 @@
     "test:update": "npx projen test:update",
     "test:watch": "npx projen test:watch",
     "unbump": "npx projen unbump",
-    "upgrade": "npx projen upgrade",
-    "upgrade-projen": "npx projen upgrade-projen",
     "watch": "npx projen watch",
     "projen": "npx projen"
   },
@@ -52,7 +50,6 @@
     "jsii-diff": "^1.20.1",
     "jsii-docgen": "^1.8.38",
     "json-schema": "^0.3.0",
-    "npm-check-updates": "^12",
     "projen": "^0.50.8",
     "standard-version": "^9",
     "ts-jest": "^26.5.1",

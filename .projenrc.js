@@ -14,6 +14,7 @@ const project = new awscdk.AwsCdkConstructLibrary({
     'eslint',
     'esbuild',
   ],
+  depsUpgrade: false,
   npmAccess: 'public',
   keywords: [
     'aws', 'awscdk', 'RDS', 'SQL',

@@ -55,4 +55,3 @@ cdk.context.json
 .idea/
 cdk.out/
 npm-cache/
-!/.github/workflows/upgrade-main.yml
