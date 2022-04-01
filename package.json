@@ -13,6 +13,7 @@
     "compile": "npx projen compile",
     "default": "npx projen default",
     "docgen": "npx projen docgen",
+    "eject": "npx projen eject",
     "eslint": "npx projen eslint",
     "package": "npx projen package",
     "package-all": "npx projen package-all",
@@ -49,8 +50,9 @@
     "jsii": "^1.20.1",
     "jsii-diff": "^1.20.1",
     "jsii-docgen": "^1.8.38",
+    "jsii-pacmak": "^1.55.1",
     "json-schema": "^0.3.0",
-    "projen": "^0.50.8",
+    "projen": "^0.54.3",
     "standard-version": "^9",
     "ts-jest": "^26.5.1",
     "typescript": "^3.9.5"
@@ -83,6 +85,7 @@
       "json",
       "lcov",
       "clover",
+      "cobertura",
       "text"
     ],
     "coverageDirectory": "coverage",
