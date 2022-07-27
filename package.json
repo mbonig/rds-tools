@@ -1,6 +1,6 @@
 {
   "name": "@matthewbonig/rds-tools",
-  "description": "A construct for working with RDS SQL servers",
+  "description": "A construct for working with RDS servers",
   "repository": {
     "type": "git",
     "url": "https://github.com/mbonig/rds-tools.git"
