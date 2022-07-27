@@ -17,6 +17,7 @@
     "eslint": "npx projen eslint",
     "package": "npx projen package",
     "package-all": "npx projen package-all",
+    "package:dotnet": "npx projen package:dotnet",
     "package:js": "npx projen package:js",
     "post-compile": "npx projen post-compile",
     "pre-compile": "npx projen pre-compile",
@@ -118,7 +119,12 @@
   "stability": "stable",
   "jsii": {
     "outdir": "dist",
-    "targets": {},
+    "targets": {
+      "dotnet": {
+        "namespace": "MBonig.RdsTools",
+        "packageId": "MBonig.RdsTools"
+      }
+    },
     "tsc": {
       "outDir": "lib",
       "rootDir": "src"

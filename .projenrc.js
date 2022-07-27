@@ -4,7 +4,7 @@ const { awscdk } = require('projen');
 const project = new awscdk.AwsCdkConstructLibrary({
   author: 'Matthew Bonig',
   authorAddress: 'matthew.bonig@gmail.com',
-  description: 'A construct for working with RDS SQL servers',
+  description: 'A construct for working with RDS servers',
   cdkVersion: '2.4.0',
   defaultReleaseBranch: 'main',
   jsiiFqn: 'matthewbonig.rdsTools',
@@ -19,6 +19,10 @@ const project = new awscdk.AwsCdkConstructLibrary({
   keywords: [
     'aws', 'awscdk', 'RDS', 'SQL',
   ],
+  publishToNuget: {
+    dotNetNamespace: 'MBonig.RdsTools',
+    packageId: 'MBonig.RdsTools',
+  },
 });
 
 project.addFields({
