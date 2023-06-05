@@ -49,7 +49,7 @@ describe('DatabaseUser', () => {
     Role: role,
     Environment: environment,
     Handler: 'index.handler',
-    Runtime: 'nodejs12.x',
+    Runtime: 'nodejs16.x',
     Timeout: 15,
     VpcConfig: vpcConfig,
   };
@@ -94,6 +94,9 @@ describe('DatabaseUser', () => {
       databaseInstance: testDatabaseInstance,
       script: 'SELECT * FROM table',
       secret: testDatabaseInstance.secret,
+      securityGroups: [new SecurityGroup(stack, 'test-sg', {
+        vpc,
+      })],
       ...props,
     });
     return stack;

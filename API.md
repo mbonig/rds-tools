@@ -1,106 +1,354 @@
-# API Reference
+# RDS Tools
 
-**Classes**
+<!--BEGIN STABILITY BANNER-->
 
-Name|Description
-----|-----------
-[DatabaseScript](#matthewbonig-rds-tools-databasescript)|*No description*
+---
+
+![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
+
+> The APIs of higher level constructs in this module are in **developer preview** before they
+> become stable. We will only make breaking changes to address unforeseen API issues. Therefore,
+> these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes
+> will be announced in release notes. This means that while you may use them, you may need to
+> update your source code when upgrading to a newer version of this package.
+
+---
+
+There are multiple versions of this library published. You should be using the v0.X.X versions for now.
+There are versions published that match the CDK version they depend on, but don't use those.
+
+<!--END STABILITY BANNER-->
+
+This is a collection of CDK constructs you can use with RDS.
+
+![Developer Preview](https://img.shields.io/badge/developer--preview-informational.svg?style=for-the-badge)
+
+# DatabaseScript
+
+Provides a Custom Resource and backing Lambda Function that will run a given script against a given database.
+
+```typescript
+const databaseInstance = new DatabaseInstance(stack, 'test-database', {
+  engine: DatabaseInstanceEngine.sqlServerWeb({ version: SqlServerEngineVersion.VER_15_00_4043_16_V1 }),
+  vpc: vpc,
+});
 
 
-**Structs**
-
-Name|Description
-----|-----------
-[DatabaseScriptProps](#matthewbonig-rds-tools-databasescriptprops)|*No description*
+// ...
 
 
+new DatabaseScript(stack2, 'test', {
+  databaseInstance,
+  script: 'SELECT 1',
+})
+  .bind(databaseInstance.connections.securityGroups[0]); // bind for security access
+```
 
-## class DatabaseScript  <a id="matthewbonig-rds-tools-databasescript"></a>
+# DatabaseUser
+
+There was once a construct called DatabaseUser. However, it is better to use the standard code from the CDK directly:
+
+```typescript
+const myUserSecret = new rds.DatabaseSecret(this, 'MyUserSecret', {
+  username: 'myuser',
+  masterSecret: instance.secret,
+  excludeCharacters: '{}[]()\'"/\\', // defaults to the set " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
+});
+const myUserSecretAttached = myUserSecret.attach(instance); // Adds DB connections information in the secret
+instance.addRotationMultiUser('MyUser', { // Add rotation using the multi user scheme
+  secret: myUserSecretAttached,
+});
+```
 
 
+# API Reference <a name="API Reference" id="api-reference"></a>
 
-__Implements__: [IConstruct](#constructs-iconstruct), [IDependable](#constructs-idependable), [aws_ec2.IConnectable](#aws-cdk-lib-aws-ec2-iconnectable)
-__Extends__: [Construct](#constructs-construct)
+## Constructs <a name="Constructs" id="Constructs"></a>
 
-### Initializer
+### DatabaseScript <a name="DatabaseScript" id="@matthewbonig/rds-tools.DatabaseScript"></a>
 
+- *Implements:* aws-cdk-lib.aws_ec2.IConnectable
 
+#### Initializers <a name="Initializers" id="@matthewbonig/rds-tools.DatabaseScript.Initializer"></a>
 
+```typescript
+import { DatabaseScript } from '@matthewbonig/rds-tools'
 
-```ts
 new DatabaseScript(scope: Construct, id: string, props: DatabaseScriptProps)
 ```
 
-* **scope** (<code>[Construct](#constructs-construct)</code>)  *No description*
-* **id** (<code>string</code>)  *No description*
-* **props** (<code>[DatabaseScriptProps](#matthewbonig-rds-tools-databasescriptprops)</code>)  *No description*
-  * **script** (<code>string</code>)  The script to execute. 
-  * **databaseInstance** (<code>[aws_rds.DatabaseInstance](#aws-cdk-lib-aws-rds-databaseinstance)</code>)  The database instance to run the script against. __*Optional*__
-  * **databaseName** (<code>string</code>)  An optional databaseName. __*Optional*__
-  * **enableAdhoc** (<code>boolean</code>)  Deploy a second Lambda function that allows for adhoc sql against the database? __*Default*__: false
-  * **secret** (<code>[aws_secretsmanager.ISecret](#aws-cdk-lib-aws-secretsmanager-isecret)</code>)  An optional secret that provides credentials for the database. __*Default*__: the root secret from the database instance
-  * **vpc** (<code>[aws_ec2.IVpc](#aws-cdk-lib-aws-ec2-ivpc)</code>)  The VPC for the Lambda Function to attach to. __*Optional*__
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@matthewbonig/rds-tools.DatabaseScript.Initializer.parameter.scope">scope</a></code> | <code>constructs.Construct</code> | *No description.* |
+| <code><a href="#@matthewbonig/rds-tools.DatabaseScript.Initializer.parameter.id">id</a></code> | <code>string</code> | *No description.* |
+| <code><a href="#@matthewbonig/rds-tools.DatabaseScript.Initializer.parameter.props">props</a></code> | <code><a href="#@matthewbonig/rds-tools.DatabaseScriptProps">DatabaseScriptProps</a></code> | *No description.* |
 
+---
 
+##### `scope`<sup>Required</sup> <a name="scope" id="@matthewbonig/rds-tools.DatabaseScript.Initializer.parameter.scope"></a>
 
-### Properties
+- *Type:* constructs.Construct
 
+---
 
-Name | Type | Description 
------|------|-------------
-**adhocConnections** | <code>[aws_ec2.Connections](#aws-cdk-lib-aws-ec2-connections)</code> | <span></span>
-**connections** | <code>[aws_ec2.Connections](#aws-cdk-lib-aws-ec2-connections)</code> | The network connections associated with this resource.
-**adhocHandler**? | <code>[aws_lambda.IFunction](#aws-cdk-lib-aws-lambda-ifunction)</code> | The underlying Lambda handler function for making adhoc commands against the database.<br/>__*Optional*__
+##### `id`<sup>Required</sup> <a name="id" id="@matthewbonig/rds-tools.DatabaseScript.Initializer.parameter.id"></a>
 
-### Methods
+- *Type:* string
 
+---
 
-#### bind(securityGroup, port)⚠️ <a id="matthewbonig-rds-tools-databasescript-bind"></a>
+##### `props`<sup>Required</sup> <a name="props" id="@matthewbonig/rds-tools.DatabaseScript.Initializer.parameter.props"></a>
+
+- *Type:* <a href="#@matthewbonig/rds-tools.DatabaseScriptProps">DatabaseScriptProps</a>
+
+---
+
+#### Methods <a name="Methods" id="Methods"></a>
+
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@matthewbonig/rds-tools.DatabaseScript.toString">toString</a></code> | Returns a string representation of this construct. |
+| <code><a href="#@matthewbonig/rds-tools.DatabaseScript.bind">bind</a></code> | Grants access to the Lambda Function to the given SecurityGroup. |
+| <code><a href="#@matthewbonig/rds-tools.DatabaseScript.slugify">slugify</a></code> | *No description.* |
+
+---
+
+##### `toString` <a name="toString" id="@matthewbonig/rds-tools.DatabaseScript.toString"></a>
+
+```typescript
+public toString(): string
+```
+
+Returns a string representation of this construct.
+
+##### ~~`bind`~~ <a name="bind" id="@matthewbonig/rds-tools.DatabaseScript.bind"></a>
+
+```typescript
+public bind(securityGroup: SecurityGroup, port: Port): DatabaseScript
+```
 
 Grants access to the Lambda Function to the given SecurityGroup.
 
 Adds an ingress rule to the given security group and for the given port.
 
-```ts
-bind(securityGroup: SecurityGroup, port: Port): DatabaseScript
+###### `securityGroup`<sup>Required</sup> <a name="securityGroup" id="@matthewbonig/rds-tools.DatabaseScript.bind.parameter.securityGroup"></a>
+
+- *Type:* aws-cdk-lib.aws_ec2.SecurityGroup
+
+---
+
+###### `port`<sup>Required</sup> <a name="port" id="@matthewbonig/rds-tools.DatabaseScript.bind.parameter.port"></a>
+
+- *Type:* aws-cdk-lib.aws_ec2.Port
+
+---
+
+##### `slugify` <a name="slugify" id="@matthewbonig/rds-tools.DatabaseScript.slugify"></a>
+
+```typescript
+public slugify(x: string): string
 ```
 
-* **securityGroup** (<code>[aws_ec2.SecurityGroup](#aws-cdk-lib-aws-ec2-securitygroup)</code>)  *No description*
-* **port** (<code>[aws_ec2.Port](#aws-cdk-lib-aws-ec2-port)</code>)  *No description*
+###### `x`<sup>Required</sup> <a name="x" id="@matthewbonig/rds-tools.DatabaseScript.slugify.parameter.x"></a>
 
-__Returns__:
-* <code>[DatabaseScript](#matthewbonig-rds-tools-databasescript)</code>
+- *Type:* string
 
-#### slugify(x) <a id="matthewbonig-rds-tools-databasescript-slugify"></a>
+---
 
+#### Static Functions <a name="Static Functions" id="Static Functions"></a>
 
+| **Name** | **Description** |
+| --- | --- |
+| <code><a href="#@matthewbonig/rds-tools.DatabaseScript.isConstruct">isConstruct</a></code> | Checks if `x` is a construct. |
 
-```ts
-slugify(x: string): string
+---
+
+##### ~~`isConstruct`~~ <a name="isConstruct" id="@matthewbonig/rds-tools.DatabaseScript.isConstruct"></a>
+
+```typescript
+import { DatabaseScript } from '@matthewbonig/rds-tools'
+
+DatabaseScript.isConstruct(x: any)
 ```
 
-* **x** (<code>string</code>)  *No description*
+Checks if `x` is a construct.
 
-__Returns__:
-* <code>string</code>
+###### `x`<sup>Required</sup> <a name="x" id="@matthewbonig/rds-tools.DatabaseScript.isConstruct.parameter.x"></a>
+
+- *Type:* any
+
+Any object.
+
+---
+
+#### Properties <a name="Properties" id="Properties"></a>
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@matthewbonig/rds-tools.DatabaseScript.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
+| <code><a href="#@matthewbonig/rds-tools.DatabaseScript.property.adhocConnections">adhocConnections</a></code> | <code>aws-cdk-lib.aws_ec2.Connections</code> | *No description.* |
+| <code><a href="#@matthewbonig/rds-tools.DatabaseScript.property.connections">connections</a></code> | <code>aws-cdk-lib.aws_ec2.Connections</code> | The network connections associated with this resource. |
+| <code><a href="#@matthewbonig/rds-tools.DatabaseScript.property.adhocHandler">adhocHandler</a></code> | <code>aws-cdk-lib.aws_lambda.IFunction</code> | The underlying Lambda handler function for making adhoc commands against the database. |
+
+---
+
+##### `node`<sup>Required</sup> <a name="node" id="@matthewbonig/rds-tools.DatabaseScript.property.node"></a>
+
+```typescript
+public readonly node: Node;
+```
+
+- *Type:* constructs.Node
+
+The tree node.
+
+---
+
+##### `adhocConnections`<sup>Required</sup> <a name="adhocConnections" id="@matthewbonig/rds-tools.DatabaseScript.property.adhocConnections"></a>
+
+```typescript
+public readonly adhocConnections: Connections;
+```
+
+- *Type:* aws-cdk-lib.aws_ec2.Connections
+
+---
+
+##### `connections`<sup>Required</sup> <a name="connections" id="@matthewbonig/rds-tools.DatabaseScript.property.connections"></a>
+
+```typescript
+public readonly connections: Connections;
+```
+
+- *Type:* aws-cdk-lib.aws_ec2.Connections
+
+The network connections associated with this resource.
+
+---
+
+##### `adhocHandler`<sup>Optional</sup> <a name="adhocHandler" id="@matthewbonig/rds-tools.DatabaseScript.property.adhocHandler"></a>
+
+```typescript
+public readonly adhocHandler: IFunction;
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.IFunction
+
+The underlying Lambda handler function for making adhoc commands against the database.
+
+Undefined unless 'enableAdhoc' is true
+
+---
 
 
+## Structs <a name="Structs" id="Structs"></a>
 
-## struct DatabaseScriptProps  <a id="matthewbonig-rds-tools-databasescriptprops"></a>
+### DatabaseScriptProps <a name="DatabaseScriptProps" id="@matthewbonig/rds-tools.DatabaseScriptProps"></a>
 
+#### Initializer <a name="Initializer" id="@matthewbonig/rds-tools.DatabaseScriptProps.Initializer"></a>
 
+```typescript
+import { DatabaseScriptProps } from '@matthewbonig/rds-tools'
 
+const databaseScriptProps: DatabaseScriptProps = { ... }
+```
 
+#### Properties <a name="Properties" id="Properties"></a>
 
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| <code><a href="#@matthewbonig/rds-tools.DatabaseScriptProps.property.script">script</a></code> | <code>string</code> | The script to execute. |
+| <code><a href="#@matthewbonig/rds-tools.DatabaseScriptProps.property.databaseInstance">databaseInstance</a></code> | <code>aws-cdk-lib.aws_rds.DatabaseInstance</code> | The database instance to run the script against. |
+| <code><a href="#@matthewbonig/rds-tools.DatabaseScriptProps.property.databaseName">databaseName</a></code> | <code>string</code> | An optional databaseName. |
+| <code><a href="#@matthewbonig/rds-tools.DatabaseScriptProps.property.enableAdhoc">enableAdhoc</a></code> | <code>boolean</code> | Deploy a second Lambda function that allows for adhoc sql against the database? |
+| <code><a href="#@matthewbonig/rds-tools.DatabaseScriptProps.property.secret">secret</a></code> | <code>aws-cdk-lib.aws_secretsmanager.ISecret</code> | An optional secret that provides credentials for the database. |
+| <code><a href="#@matthewbonig/rds-tools.DatabaseScriptProps.property.vpc">vpc</a></code> | <code>aws-cdk-lib.aws_ec2.IVpc</code> | The VPC for the Lambda Function to attach to. |
 
-Name | Type | Description 
------|------|-------------
-**script** | <code>string</code> | The script to execute.
-**databaseInstance**? | <code>[aws_rds.DatabaseInstance](#aws-cdk-lib-aws-rds-databaseinstance)</code> | The database instance to run the script against.<br/>__*Optional*__
-**databaseName**? | <code>string</code> | An optional databaseName.<br/>__*Optional*__
-**enableAdhoc**? | <code>boolean</code> | Deploy a second Lambda function that allows for adhoc sql against the database?<br/>__*Default*__: false
-**secret**? | <code>[aws_secretsmanager.ISecret](#aws-cdk-lib-aws-secretsmanager-isecret)</code> | An optional secret that provides credentials for the database.<br/>__*Default*__: the root secret from the database instance
-**vpc**? | <code>[aws_ec2.IVpc](#aws-cdk-lib-aws-ec2-ivpc)</code> | The VPC for the Lambda Function to attach to.<br/>__*Optional*__
+---
+
+##### `script`<sup>Required</sup> <a name="script" id="@matthewbonig/rds-tools.DatabaseScriptProps.property.script"></a>
+
+```typescript
+public readonly script: string;
+```
+
+- *Type:* string
+
+The script to execute.
+
+---
+
+##### `databaseInstance`<sup>Optional</sup> <a name="databaseInstance" id="@matthewbonig/rds-tools.DatabaseScriptProps.property.databaseInstance"></a>
+
+```typescript
+public readonly databaseInstance: DatabaseInstance;
+```
+
+- *Type:* aws-cdk-lib.aws_rds.DatabaseInstance
+
+The database instance to run the script against.
+
+---
+
+##### `databaseName`<sup>Optional</sup> <a name="databaseName" id="@matthewbonig/rds-tools.DatabaseScriptProps.property.databaseName"></a>
+
+```typescript
+public readonly databaseName: string;
+```
+
+- *Type:* string
+
+An optional databaseName.
+
+If none is provided then it will be the default for the rds instance, as defined by the AWS docs.
+
+mysql - mysql
+mssql - master
+postgres - postgres
+
+---
+
+##### `enableAdhoc`<sup>Optional</sup> <a name="enableAdhoc" id="@matthewbonig/rds-tools.DatabaseScriptProps.property.enableAdhoc"></a>
+
+```typescript
+public readonly enableAdhoc: boolean;
+```
+
+- *Type:* boolean
+- *Default:* false
+
+Deploy a second Lambda function that allows for adhoc sql against the database?
+
+---
+
+##### `secret`<sup>Optional</sup> <a name="secret" id="@matthewbonig/rds-tools.DatabaseScriptProps.property.secret"></a>
+
+```typescript
+public readonly secret: ISecret;
+```
+
+- *Type:* aws-cdk-lib.aws_secretsmanager.ISecret
+- *Default:* the root secret from the database instance
+
+An optional secret that provides credentials for the database.
+
+Must have fields 'username' and 'password'
+
+---
+
+##### `vpc`<sup>Optional</sup> <a name="vpc" id="@matthewbonig/rds-tools.DatabaseScriptProps.property.vpc"></a>
+
+```typescript
+public readonly vpc: IVpc;
+```
+
+- *Type:* aws-cdk-lib.aws_ec2.IVpc
+
+The VPC for the Lambda Function to attach to.
+
+If one is not provide, it's assumed from the database instance.
+
+---
 
 
 
