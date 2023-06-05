@@ -40,6 +40,7 @@ junit.xml
 !/.github/workflows/release.yml
 !/.mergify.yml
 !/.github/pull_request_template.md
+!/.npmrc
 !/test/
 !/tsconfig.dev.json
 !/src/
