@@ -47,7 +47,7 @@ export const getProvider = (props: {
 
 export const innerHandler = async ({ script, databaseName }: { script: string; databaseName: string }) => {
 
-  const sm = new AWS.SecretsManager({ region: 'us-east-1' });
+  const sm = new AWS.SecretsManager({});
   const {
     SECRET_ARN: powerUserSecretArn,
   } = process.env;
