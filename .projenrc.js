@@ -6,7 +6,6 @@ const project = new awscdk.AwsCdkConstructLibrary({
   authorAddress: 'matthew.bonig@gmail.com',
   description: 'A construct for working with RDS SQL servers',
   cdkVersion: '2.50.0',
-
   defaultReleaseBranch: 'main',
   jsiiFqn: 'matthewbonig.rdsTools',
   name: '@matthewbonig/rds-tools',

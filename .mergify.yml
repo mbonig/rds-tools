@@ -2,15 +2,13 @@
 
 queue_rules:
   - name: default
-
     update_method: merge
-
     conditions:
       - "#approved-reviews-by>=1"
       - -label~=(do-not-merge)
       - status-success=build
       - status-success=package-js
-
+      - status-success=package-dotnet
 pull_request_rules:
   - name: Automatic merge on approval and successful build
     actions:
