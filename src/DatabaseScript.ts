@@ -65,7 +65,7 @@ export class DatabaseScript extends Construct implements IConnectable {
    * Undefined unless 'enableAdhoc' is true
    */
   adhocHandler?: aws_lambda.IFunction;
-  private readonly handler: aws_lambda.IFunction;
+  readonly handler: aws_lambda.IFunction;
   private readonly providerLayer: aws_lambda.LayerVersion;
 
   constructor(scope: Construct, id: string, props: DatabaseScriptProps) {

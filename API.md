@@ -188,6 +188,7 @@ Any object.
 | <code><a href="#@matthewbonig/rds-tools.DatabaseScript.property.node">node</a></code> | <code>constructs.Node</code> | The tree node. |
 | <code><a href="#@matthewbonig/rds-tools.DatabaseScript.property.adhocConnections">adhocConnections</a></code> | <code>aws-cdk-lib.aws_ec2.Connections</code> | *No description.* |
 | <code><a href="#@matthewbonig/rds-tools.DatabaseScript.property.connections">connections</a></code> | <code>aws-cdk-lib.aws_ec2.Connections</code> | The network connections associated with this resource. |
+| <code><a href="#@matthewbonig/rds-tools.DatabaseScript.property.handler">handler</a></code> | <code>aws-cdk-lib.aws_lambda.IFunction</code> | *No description.* |
 | <code><a href="#@matthewbonig/rds-tools.DatabaseScript.property.adhocHandler">adhocHandler</a></code> | <code>aws-cdk-lib.aws_lambda.IFunction</code> | The underlying Lambda handler function for making adhoc commands against the database. |
 
 ---
@@ -223,6 +224,16 @@ public readonly connections: Connections;
 - *Type:* aws-cdk-lib.aws_ec2.Connections
 
 The network connections associated with this resource.
+
+---
+
+##### `handler`<sup>Required</sup> <a name="handler" id="@matthewbonig/rds-tools.DatabaseScript.property.handler"></a>
+
+```typescript
+public readonly handler: IFunction;
+```
+
+- *Type:* aws-cdk-lib.aws_lambda.IFunction
 
 ---
 
