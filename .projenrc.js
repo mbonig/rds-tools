@@ -26,6 +26,10 @@ const project = new awscdk.AwsCdkConstructLibrary({
     dotNetNamespace: 'MBonig.RdsTools',
     packageId: 'MBonig.RdsTools',
   },
+  publishToPypi: {
+    distName: 'mbonig.rds-tools',
+    module: 'mbonig.rds_tools',
+  },
 });
 
 project.addFields({
