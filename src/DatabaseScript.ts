@@ -13,6 +13,7 @@ import {
   Stack,
 } from 'aws-cdk-lib';
 import { Connections, IConnectable, IVpc } from 'aws-cdk-lib/aws-ec2';
+import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
 import { Construct } from 'constructs';
 
@@ -177,7 +178,9 @@ export class DatabaseScript extends Construct implements IConnectable {
         externalModules: ['aws-sdk', 'mssql', 'promise-mysql', 'pg'],
       },
       timeout: Duration.seconds(15), // TODO: should be overridable
-      logRetention: aws_logs.RetentionDays.ONE_DAY,
+      logGroup: new LogGroup(this, id, {
+        retention: RetentionDays.ONE_DAY,
+      }),
     });
 
     handlerFunction.addLayers(this.providerLayer);
