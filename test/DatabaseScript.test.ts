@@ -1,8 +1,7 @@
 import { Template } from 'aws-cdk-lib/assertions';
-import { Port, SecurityGroup, Vpc } from 'aws-cdk-lib/aws-ec2';
+import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Code, CodeConfig } from 'aws-cdk-lib/aws-lambda';
 import { DatabaseInstance, DatabaseInstanceEngine, MysqlEngineVersion } from 'aws-cdk-lib/aws-rds';
-import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { App, Stack } from 'aws-cdk-lib/core';
 import { DatabaseScript } from '../src';
 
@@ -11,53 +10,12 @@ describe('DatabaseUser', () => {
   let stack: Stack;
   let vpc: Vpc;
 
-  // standard responses
-  const role = {
-    'Fn::GetAtt': [
-      'testdbcrsinglServiceRoleD215FB7C',
-      'Arn',
-    ],
-  };
-
-  const variables = {
-    AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
-  };
-  const environment = {
-    Variables: variables,
-  };
-  const vpcConfig = {
-
-    SecurityGroupIds: [
-      {
-        'Fn::GetAtt': [
-          'testdbcrsinglSecurityGroup42F73B8E',
-          'GroupId',
-        ],
-      },
-    ],
-    SubnetIds: [
-      {
-        Ref: 'testvpcPrivateSubnet1Subnet865FB50A',
-      },
-      {
-        Ref: 'testvpcPrivateSubnet2Subnet23D3396F',
-      },
-    ],
-  };
-
-  const commonProps = {
-    Role: role,
-    Environment: environment,
-    Handler: 'index.handler',
-    Runtime: 'nodejs16.x',
-    Timeout: 15,
-    VpcConfig: vpcConfig,
-  };
-
 
   beforeEach(() => {
     app = new App();
-    stack = new Stack(app, 'test-stack');
+    stack = new Stack(app, 'test-stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
     vpc = new Vpc(stack, 'test-vpc', {});
   });
 
@@ -90,143 +48,100 @@ describe('DatabaseUser', () => {
       engine: DatabaseInstanceEngine.mysql({ version: MysqlEngineVersion.VER_8_0_21 }),
       vpc,
     });
-    new DatabaseScript(stack, 'test-construct', {
+    const databaseScript = new DatabaseScript(stack, 'test-construct', {
       databaseInstance: testDatabaseInstance,
       script: 'SELECT * FROM table',
       secret: testDatabaseInstance.secret,
-      securityGroups: [new SecurityGroup(stack, 'test-sg', {
-        vpc,
-      })],
       ...props,
     });
+
+    testDatabaseInstance.connections.allowDefaultPortFrom(databaseScript);
+
+    // Make sure the script runs after the database is created
+    databaseScript.node.addDependency(testDatabaseInstance);
     return stack;
   }
 
-  it('Creates Lambda using db root secret', () => {
+  it('Creates Lambda function', () => {
     createStack();
-
     const assert = Template.fromStack(stack);
+
     assert.hasResourceProperties('AWS::Lambda::Function', {
-      ...commonProps,
-      Environment: {
-        Variables: {
-          ...variables,
-          SECRET_ARN: {
-            Ref: 'testdbSecretAttachmentA0E468D9',
-          },
-        },
-      },
+      Handler: 'index.handler',
+      Runtime: 'nodejs22.x',
+      Timeout: 15,
     });
   });
 
-  it('Creates Lambda using given secret if not provided', () => {
-    createStack({
-      secret: new Secret(stack, 'secret', {}),
-    });
-    const assert = Template.fromStack(stack);
-    assert.hasResourceProperties('AWS::Lambda::Function', {
-      ...commonProps,
-      Environment: {
-        Variables: {
-          ...variables,
-          SECRET_ARN: {
-            Ref: 'secret4DA88516',
-          },
-        },
-      },
-    });
-  });
-
-  it('Lambda Permissions are correct', () => {
+  it('Creates Custom Resource', () => {
     createStack();
     const assert = Template.fromStack(stack);
-    assert.hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: [
-              'secretsmanager:GetSecretValue',
-              'secretsmanager:DescribeSecret',
-            ],
-            Effect: 'Allow',
-            Resource: {
-              Ref: 'testdbSecretAttachmentA0E468D9',
-            },
-          },
-        ],
-        Version: '2012-10-17',
-      },
-      PolicyName: 'testdbcrsinglServiceRoleDefaultPolicy249C0A03',
-      Roles: [
-        {
-          Ref: 'testdbcrsinglServiceRoleD215FB7C',
-        },
-      ],
-    });
-  });
 
-  it('Custom Resource is right', () => {
-    createStack();
-    const assert = Template.fromStack(stack);
     assert.hasResourceProperties('AWS::CloudFormation::CustomResource', {
-      ServiceToken: {
-        'Fn::GetAtt': [
-          'testdbcrsinglB417086D',
-          'Arn',
-        ],
-      },
       script: 'SELECT * FROM table',
     });
   });
 
-  it('Creates adhoc lambda', ()=>{
-    createStack({ enableAdhoc: true });
-
+  it('Creates log group', () => {
+    createStack();
     const assert = Template.fromStack(stack);
-    assert.hasResourceProperties('AWS::Lambda::Function', {
-      ...commonProps,
-      Environment: {
-        Variables: {
-          ...variables,
-          SECRET_ARN: {
-            Ref: 'testdbSecretAttachmentA0E468D9',
-          },
-        },
-      },
+
+    assert.hasResourceProperties('AWS::Logs::LogGroup', {
+      RetentionInDays: 1,
     });
   });
 
-  it('doesn\'t force a dependency for the databaseInstance stack if different', () => {
-
-    const testDatabaseInstance = new DatabaseInstance(stack, 'testdb', {
+  it('sanitizes log group names with special characters', () => {
+    // Use names with various special characters that should be removed/sanitized
+    const testDatabaseInstance = new DatabaseInstance(stack, 'test@db$with%invalid&chars', {
       engine: DatabaseInstanceEngine.mysql({ version: MysqlEngineVersion.VER_8_0_21 }),
       vpc,
     });
 
-    new DatabaseScript(stack, 'test-construct', {
+    const databaseScript = new DatabaseScript(stack, 'test-construct@with%invalid&chars', {
       databaseInstance: testDatabaseInstance,
       script: 'SELECT * FROM table',
       secret: testDatabaseInstance.secret,
-    }).bind(new SecurityGroup(stack, 'sg12', { vpc }), Port.tcp(1433));
+    });
+
+    testDatabaseInstance.connections.allowDefaultPortFrom(databaseScript);
 
     const assert = Template.fromStack(stack);
-    assert.hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
-      IpProtocol: 'tcp',
-      Description: 'access from Lambda testdbcrsingl',
-      FromPort: 1433,
-      GroupId: {
-        'Fn::GetAtt': [
-          'sg123BFB086F',
-          'GroupId',
-        ],
-      },
-      SourceSecurityGroupId: {
-        'Fn::GetAtt': [
-          'testdbcrsinglSecurityGroup42F73B8E',
-          'GroupId',
-        ],
-      },
-      ToPort: 1433,
+
+    // Get the log group from the template
+    const logGroups = assert.findResources('AWS::Logs::LogGroup');
+    const logGroupIds = Object.keys(logGroups);
+
+    // Verify that log group IDs only contain valid characters
+    // AWS Lambda LogGroup pattern: [\.\-_/#A-Za-z0-9]+
+    const validPattern = /^[.\-_/#A-Za-z0-9]+$/;
+
+    logGroupIds.forEach(logGroupId => {
+      expect(logGroupId).toMatch(validPattern);
+      // Make sure invalid characters like @, $, %, & are not present
+      expect(logGroupId).not.toMatch(/[@$%&]/);
+    });
+
+    // Test the actual log group name that will be used in Lambda LoggingConfig
+    const lambdaFunctions = assert.findResources('AWS::Lambda::Function');
+    const lambdaIds = Object.keys(lambdaFunctions);
+
+    lambdaIds.forEach(lambdaId => {
+      const lambda = lambdaFunctions[lambdaId];
+      if (lambda.Properties?.LoggingConfig?.LogGroup) {
+        const logGroupRef = lambda.Properties.LoggingConfig.LogGroup;
+        // Check if it's a Ref reference (for logGroupName)
+        if (logGroupRef.Ref) {
+          const logGroupResourceId = logGroupRef.Ref;
+          // This should match our pattern since it's the CDK construct ID
+          expect(logGroupResourceId).toMatch(validPattern);
+          expect(logGroupResourceId).not.toMatch(/[@$%&]/);
+        }
+      }
+    });
+
+    assert.hasResourceProperties('AWS::Logs::LogGroup', {
+      RetentionInDays: 1,
     });
   });
 

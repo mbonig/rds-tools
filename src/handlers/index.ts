@@ -1,10 +1,6 @@
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+import * as AWS from 'aws-sdk';
+import * as response from './cfn-response';
 import { IProvider } from './provider';
-
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const AWS = require('aws-sdk');
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const response = require('./cfn-response');
 
 export const getProvider = (props: {
   username: string;
@@ -53,6 +49,9 @@ export const innerHandler = async ({ script, databaseName }: { script: string; d
   } = process.env;
 
   console.log('Getting secret...');
+  if (!powerUserSecretArn) {
+    throw new Error('SECRET_ARN environment variable is required');
+  }
   const { SecretString: powerUserSecretString } = await sm.getSecretValue({ SecretId: powerUserSecretArn }).promise();
 
   if (!powerUserSecretString) {
