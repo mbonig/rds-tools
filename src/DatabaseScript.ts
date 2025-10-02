@@ -1,4 +1,5 @@
 import { execSync, ExecSyncOptions } from 'child_process';
+import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import {
@@ -10,6 +11,7 @@ import {
   aws_secretsmanager,
   CustomResource,
   Duration,
+  RemovalPolicy,
   Stack,
 } from 'aws-cdk-lib';
 import { Connections, IConnectable, IVpc } from 'aws-cdk-lib/aws-ec2';
@@ -85,7 +87,7 @@ export class DatabaseScript extends Construct implements IConnectable {
     this.providerLayer = new aws_lambda.LayerVersion(this, `${id}-deps-layer`, {
       code: aws_lambda.Code.fromAsset(assetPath, {
         bundling: {
-          image: aws_lambda.Runtime.NODEJS_16_X.bundlingImage,
+          image: aws_lambda.Runtime.NODEJS_22_X.bundlingImage,
           command: [
             'bash', '-c',
             'echo npm i && cp -r /asset-input/* /asset-output',
@@ -160,24 +162,39 @@ export class DatabaseScript extends Construct implements IConnectable {
   }
 
   slugify(x: string): string {
-    return x.replace(/[^a-zA-Z0-9]/g, '');
+    return x.replace(/[^a-zA-Z0-9.\-_/#]/g, '');
   }
 
   private createLambda(id: string, props: DatabaseScriptProps, vpc: IVpc, secret: ISecret, handler?: string) {
+    // Use .ts for development and .js for production/packaged version
+    const entryFile = path.join(__dirname, 'handlers', 'index.ts');
+    const entryFileExists = fs.existsSync(entryFile);
+    const lockFilePath = path.join(__dirname, 'handlers', 'package-lock.json');
     const handlerFunction = this.ensureLambda(`${props.databaseInstance?.node.id ?? props.secret?.node.id}-${id}`, {
-      entry: path.join(__dirname, 'handlers', 'index.ts'),
-      depsLockFilePath: path.join(__dirname, 'handlers', 'package-lock.json'),
+      entry: entryFileExists ? entryFile : path.join(__dirname, 'handlers', 'index.js'),
+      depsLockFilePath: fs.existsSync(lockFilePath) ? lockFilePath : undefined,
       handler: handler ?? 'handler',
-      runtime: aws_lambda.Runtime.NODEJS_16_X,
+      runtime: aws_lambda.Runtime.NODEJS_22_X,
       vpc: vpc,
       environment: {
         SECRET_ARN: secret.secretArn,
       },
       bundling: {
-        externalModules: ['aws-sdk', 'mssql', 'promise-mysql', 'pg'],
+        externalModules: ['mssql', 'promise-mysql', 'pg'],
       },
       timeout: Duration.seconds(15), // TODO: should be overridable
-      logRetention: aws_logs.RetentionDays.ONE_DAY,
+    });
+
+    const handlerFunctionLogGroup = new aws_logs.LogGroup(this, `${this.slugify(handlerFunction.node.id)}-loggroup`, {
+      removalPolicy: RemovalPolicy.DESTROY,
+      retention: aws_logs.RetentionDays.ONE_DAY,
+    });
+    handlerFunctionLogGroup.grantWrite(handlerFunction);
+
+    const cfnHandlerFunction = handlerFunction.node.defaultChild as aws_lambda.CfnFunction;
+    cfnHandlerFunction.addPropertyOverride('LoggingConfig', {
+      LogGroup: handlerFunctionLogGroup.logGroupName,
+      LogFormat: 'Text',
     });
 
     handlerFunction.addLayers(this.providerLayer);

@@ -34,14 +34,17 @@ const databaseInstance = new DatabaseInstance(stack, 'test-database', {
 });
 
 
-// ...
-
-
-new DatabaseScript(stack2, 'test', {
+const databaseScript = new DatabaseScript(stack2, 'test', {
   databaseInstance,
   script: 'SELECT 1',
 })
-  .bind(databaseInstance.connections.securityGroups[0]); // bind for security access
+
+// Allow the script to connect to the database
+databaseInstance.connections.allowDefaultPortFrom(databaseScript);
+
+// Make sure the script runs after the database is created
+databaseScript.node.addDependency(databaseInstance);
+
 ```
 
 # DatabaseUser
@@ -53,7 +56,7 @@ const myUserSecret = new rds.DatabaseSecret(this, 'MyUserSecret', {
   username: 'myuser',
   masterSecret: instance.secret,
   excludeCharacters: '{}[]()\'"/\\', // defaults to the set " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
-});
+});     
 const myUserSecretAttached = myUserSecret.attach(instance); // Adds DB connections information in the secret
 instance.addRotationMultiUser('MyUser', { // Add rotation using the multi user scheme
   secret: myUserSecretAttached,

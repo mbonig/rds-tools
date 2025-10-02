@@ -12,7 +12,9 @@ export class PostgresSqlProvider implements IProvider {
       database: props.databaseName || 'postgres',
       password: props.password,
       port: props.port || 5432,
-      ssl: true,
+      ssl: {
+        rejectUnauthorized: false,
+      },
     });
   }
 
